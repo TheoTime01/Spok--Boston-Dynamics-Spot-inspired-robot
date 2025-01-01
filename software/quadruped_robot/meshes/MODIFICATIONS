@@ -1,0 +1,14 @@
+This directory contains data sampled from the Boston Dynamics Spot, and subject to the included license.
+
+The files found under: spot/spot_sim_description/meshes were constructed in the following fashion.
+
+1) Calls were made to GetRobotLinkModel() from the Spot SDK (RobotStateServiceProto).
+2) This call returns an dae for the links of the robot.
+3) These were converted into dae (Wavefront).
+
+
+The file spot_whole_body.dae, found in spot/spot_gazebo/models was constructed in the following fashion.
+
+1) A mesh was constructed in Blender from the obj/dae files in the previous step.
+
+The Boston Dynamics Spot SDK repository now contains a URDF and corresponding meshes, which could be used to develop a similar .dae.
