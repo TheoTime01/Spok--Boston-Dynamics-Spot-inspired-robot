@@ -1,0 +1,348 @@
+<?xml version='1.0'?>
+
+<robot name="fbrobot" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+
+
+  <xacro:include filename="$(find ultrasonic_sensor)/urdf/fb.gazebo" />
+  <xacro:include filename="$(find ultrasonic_sensor)/urdf/materials.xacro" />
+  <!--xacro:include filename="$(find mybot_description)/urdf/macros.xacro" /-->
+
+
+  <link name='chassis'>
+    <pose>0 0 0.1 0 0 0</pose>
+    <inertial>
+      <mass value="10.0"/>
+      <origin xyz="0.0 0 0.1" rpy=" 0 0 0"/>
+      <inertia
+          ixx="0.5" ixy="0" ixz="0"
+          iyy="1.0" iyz="0"
+          izz="0.1"
+      />
+    </inertial>
+
+    <collision name='collision'>
+      <geometry>
+        <box size=".4 .2 .1"/>
+      </geometry>
+    </collision>
+
+    <visual name='chassis_visual'>
+      <origin xyz="0 0 0" rpy=" 0 0 0"/>
+      <geometry>
+        <box size=".4 .2 .1"/>
+      </geometry>
+    </visual>
+
+
+    
+    
+  </link>
+
+
+
+ 
+  <link name="left_wheel">
+    <!--origin xyz="0.1 0.13 0.1" rpy="0 1.5707 1.5707"/-->
+    <collision name="collision">
+      <origin xyz="0 0 0" rpy="0 1.5707 1.5707"/>
+      <geometry>
+        <cylinder radius="0.1" length="0.05"/>
+      </geometry>
+    </collision>
+    <visual name="left_wheel_visual">
+      <origin xyz="0 0 0" rpy="0 1.5707 1.5707"/>
+      <geometry>
+        <cylinder radius="0.1" length="0.05"/>
+      </geometry>
+    </visual>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 1.5707 1.5707"/>
+      <mass value="5"/>
+      <cylinder_inertia m="5" r="0.1" h="0.05"/>
+      <inertia
+        ixx="1.0" ixy="0.0" ixz="0.0"
+        iyy="1.0" iyz="0.0"
+        izz="1.0"/>
+    </inertial>
+  </link>
+  <link name="base_ir_front">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.01 0.01 0.01"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.01 0.01 0.01"/>
+      </geometry>
+    </visual>
+    <inertial>
+      <mass value="1e-5" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0"      izz="1e-6" />
+    </inertial>
+</link>
+  <link name="base_ir_back">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.01 0.01 0.01"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.01 0.01 0.01"/>
+      </geometry>
+    </visual>
+    <inertial>
+      <mass value="1e-5" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0"      izz="1e-6" />
+    </inertial>
+</link>
+  <link name="base_ir_side1">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.01 0.01 0.01"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.01 0.01 0.01"/>
+      </geometry>
+    </visual>
+    <inertial>
+      <mass value="1e-5" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0"      izz="1e-6" />
+    </inertial>
+</link>
+
+<link name="base_ir_side2">
+  <inertial>
+    <mass value="0.1"/> <!-- Adjust the mass as needed -->
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <inertia
+      ixx="0.0001" ixy="0.0" ixz="0.0"
+      iyy="0.0001" iyz="0.0"
+      izz="0.0001"/>
+  </inertial>
+  <visual>
+    <geometry>
+      <box size="0.05 0.02 0.01"/> <!-- Adjust size as needed -->
+    </geometry>
+    <material name="grey"/>
+  </visual>
+  <collision>
+    <geometry>
+      <box size="0.05 0.02 0.01"/> <!-- Same as the visual geometry -->
+    </geometry>
+  </collision>
+</link>
+
+
+  <link name="imu_link">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.01 0.01 0.01"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.01 0.01 0.01"/>
+      </geometry>
+    </visual>
+    <inertial>
+      <mass value="1e-5" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0"      izz="1e-6" />
+    </inertial>
+</link>
+ 
+ 
+  <link name="right_wheel">
+    <!--origin xyz="0.1 -0.13 0.1" rpy="0 1.5707 1.5707"/-->
+    <collision name="collision">
+      <origin xyz="0 0 0" rpy="0 1.5707 1.5707"/>
+      <geometry>
+        <cylinder radius="0.1" length="0.05"/>
+      </geometry>
+    </collision>
+    <visual name="right_wheel_visual">
+      <origin xyz="0 0 0" rpy="0 1.5707 1.5707"/>
+      <geometry>
+        <cylinder radius="0.1" length="0.05"/>
+      </geometry>
+    </visual>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 1.5707 1.5707"/>
+      <mass value="5"/>
+      <cylinder_inertia m="5" r="0.1" h="0.05"/>
+      <inertia
+        ixx="1.0" ixy="0.0" ixz="0.0"
+        iyy="1.0" iyz="0.0"
+        izz="1.0"/>
+    </inertial>
+  </link>
+ <link name="left_wheel_front">
+    <!--origin xyz="0.1 -0.13 0.1" rpy="0 1.5707 1.5707"/-->
+    <collision name="collision">
+      <origin xyz="0 0 0" rpy="0 1.5707 1.5707"/>
+      <geometry>
+        <cylinder radius="0.1" length="0.05"/>
+      </geometry>
+    </collision>
+    <visual name="left_wheel_front_visual">
+      <origin xyz="0.0 0.0 0" rpy="0 1.5707 1.5707"/>
+      <geometry>
+        <cylinder radius="0.1" length="0.05"/>
+      </geometry>
+    </visual>
+    <inertial>
+      <origin xyz="0.0 0.0 0" rpy="0 1.5707 1.5707"/>
+      <mass value="5"/>
+      <cylinder_inertia m="5" r="0.1" h="0.05"/>
+      <inertia
+        ixx="1.0" ixy="0.0" ixz="0.0"
+        iyy="1.0" iyz="0.0"
+        izz="1.0"/>
+    </inertial>
+  </link>
+                                
+<link name="right_wheel_front">
+    <!--origin xyz="0.1 -0.13 0.1" rpy="0 1.5707 1.5707"/-->
+    <collision name="collision">
+      <origin xyz="0 0 0" rpy="0 1.5707 1.5707"/>
+      <geometry>
+        <cylinder radius="0.1" length="0.05"/>
+      </geometry>
+    </collision>
+    <visual name="right_wheel_front_visual">
+      <origin xyz="0.0 0.0 0" rpy="0 1.5707 1.5707"/>
+      <geometry>
+        <cylinder radius="0.1" length="0.05"/>
+      </geometry>
+    </visual>
+    <inertial>
+      <origin xyz="0.0 0.0 0" rpy="0 1.5707 1.5707"/>
+      <mass value="5"/>
+      <cylinder_inertia m="5" r="0.1" h="0.05"/>
+      <inertia
+        ixx="1.0" ixy="0.0" ixz="0.0"
+        iyy="1.0" iyz="0.0"
+        izz="1.0"/>
+    </inertial>
+  </link>
+
+<link name="dummy_root"/>
+<joint name="fixed_base" type="fixed">
+  <parent link="dummy_root"/>
+  <child link="chassis"/>
+</joint>
+
+ <joint name="ir_front_joint" type="fixed">
+    <axis xyz="0 1 0" />
+    <origin rpy="0 0 0" xyz="0.2 0.02 0.020" />
+    <parent link="chassis"/>
+    <child link="base_ir_front"/>
+</joint>
+
+ <joint name="ir_back_joint" type="fixed">
+    <axis xyz="0 1 0" />
+    <origin rpy="0 0 -3.14" xyz="-0.2 0.02 0.020" />
+    <parent link="chassis"/>
+    <child link="base_ir_back"/>
+</joint>
+
+ <joint name="ir_side1" type="fixed">
+    <axis xyz="0 1 0" />
+    <origin rpy="0 0 1.57" xyz="0.0 0.1 0.020" />
+    <parent link="chassis"/>
+    <child link="base_ir_side1"/>
+</joint>
+<joint name="ir_side2" type="fixed">
+    <axis xyz="0 1 0" />
+    <origin rpy="0 0 -1.57" xyz="0.0 -0.1 0.020" />
+    <parent link="chassis"/>
+    <child link="base_ir_side2"/>
+</joint>
+
+
+<joint name="imu_joint" type="fixed">
+    <axis xyz="0 1 0" />
+    <origin rpy="0 1.57 0" xyz="0.1 0.02 0.05" />
+    <parent link="chassis"/>
+    <child link="imu_link"/>
+</joint>
+
+ <joint type="continuous" name="left_wheel_hinge">
+    <origin xyz="0.2 0.15 0" rpy="0 0 0"/>
+    <child link="left_wheel"/>
+    <parent link="chassis"/>
+    <axis xyz="0 1 0" rpy="0 0 0"/>
+    <limit effort="100" velocity="100"/>
+    <joint_properties damping="0.0" friction="0.0"/>
+  </joint>
+
+  <joint type="continuous" name="right_wheel_hinge">
+    <origin xyz="0.2 -0.15 0" rpy="0 0 0"/>
+    <child link="right_wheel"/>
+    <parent link="chassis"/>
+    <axis xyz="0 1 0" rpy="0 0 0"/>
+    <limit effort="100" velocity="100"/>
+    <joint_properties damping="0.0" friction="0.0"/>
+  </joint>
+  
+
+
+  <joint type="continuous" name="right_wheel_front_hinge">
+    <origin xyz="-0.2 -0.15 0" rpy="0 0 0"/>
+    <child link="right_wheel_front"/>
+    <parent link="chassis"/>
+    <axis xyz="0 1 0" rpy="0 0 0"/>
+    <limit effort="100" velocity="100"/>
+    <joint_properties damping="0.0" friction="0.0"/>
+  </joint>
+  
+ <joint type="continuous" name="left_wheel_front_hinge">
+    <origin xyz="-0.2 0.15 0" rpy="0 0 0"/>
+    <child link="left_wheel_front"/>
+    <parent link="chassis"/>
+    <axis xyz="0 1 0" rpy="0 0 0"/>
+    <limit effort="100" velocity="100"/>
+    <joint_properties damping="0.0" friction="0.0"/>
+  </joint>
+  
+<joint name="left_wheel_front_joint" type="fixed">
+  <parent link="chassis"/>
+  <child link="left_wheel_front"/>
+  <origin xyz="-0.1 0.2 0" rpy="0 0 0"/>
+</joint>
+
+<joint name="right_wheel_joint" type="fixed">
+  <parent link="chassis"/>
+  <child link="right_wheel"/>
+  <origin xyz="0.1 -0.2 0" rpy="0 0 0"/>
+</joint>
+
+<joint name="right_wheel_front_joint" type="fixed">
+  <parent link="chassis"/>
+  <child link="right_wheel_front"/>
+  <origin xyz="0.1 0.2 0" rpy="0 0 0"/>
+</joint>
+
+<joint name="left_wheel_joint" type="fixed">
+  <parent link="chassis"/> <!-- Ensure chassis is correctly connected to dummy_root -->
+  <child link="left_wheel"/>
+  <origin xyz="-0.1 0.2 0" rpy="0 0 0"/>
+</joint>
+
+</robot>

@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <!-- Link for the Mesh -->
+  <link name="mesh_link">
+    <visual>
+    <origin rpy="-4.7 0 1.5" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="file://$(find ultrasonic_sensor)/meshes/high_res.obj" scale="0.015 0.015 0.015"/>  <!-- Specify the mesh file -->
+      </geometry>
+      <material name="white"/>  <!-- Use a default material; change as needed -->
+    </visual>
+  </link>
+
+
+
+</robot>
