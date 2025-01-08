@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="medor">
+
+  <!-- Include the arm -->
+  <xacro:include filename="$(find medor_description)/urdf/arm.xacro"/>
+  
+  
+
+  <link name="base_link">
+  </link>
+
+  <!-- Attach arm_base_link to the robot's base_link with a fixed joint -->
+  <joint name="arm_to_base" type="fixed">
+    <parent link="base_link"/>
+    <child link="arm_base_link"/>
+    <origin xyz="0 0 0.1" rpy="0 0 0"/>
+  </joint>
+
+</robot>

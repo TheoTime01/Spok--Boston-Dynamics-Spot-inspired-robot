@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <!-- Define Colors (Materials) -->
+  <material name="blue">
+    <color rgba="0 0 0.8 1"/>
+  </material>
+
+  <material name="black">
+    <color rgba="0 0 0 1"/>
+  </material>
+
+  <material name="white">
+    <color rgba="1 1 1 1"/>
+  </material>
+
+  <material name="red">
+    <color rgba="1 0 0 1"/>
+  </material>
+
+  <material name="green">
+    <color rgba="0 1 0 1"/>
+  </material>
+
+  <material name="yellow">
+    <color rgba="1 1 0 1"/>
+  </material>
+
+  <!-- Define a Macro for Wheels -->
+  <!-- The macro allows for reuse in the robot's Xacro file to define wheels -->
+  <xacro:macro name="wheel" params="name color radius length xyz rpy">
+    <link name="${name}">
+      <visual>
+        <origin xyz="${xyz}" rpy="${rpy}"/>
+        <geometry>
+          <cylinder length="${length}" radius="${radius}"/>
+        </geometry>
+        <material name="${color}"/>
+      </visual>
+      <collision>
+        <origin xyz="${xyz}" rpy="${rpy}"/>
+        <geometry>
+          <cylinder length="${length}" radius="${radius}"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="1"/>
+        <inertia ixx="1e-3" ixy="0.0" ixz="0.0" iyy="1e-3" iyz="0.0" izz="1e-3"/>
+      </inertial>
+    </link>
+  </xacro:macro>
+
+  <!-- Define a Macro for Joints -->
+  <!-- This macro allows for easy reuse of joint definitions -->
+  <xacro:macro name="wheel_joint" params="name parent_link child_link axis_xyz origin_xyz origin_rpy">
+    <joint name="${name}" type="continuous">
+      <axis xyz="${axis_xyz}"/>
+      <parent link="${parent_link}"/>
+      <child link="${child_link}"/>
+      <origin xyz="${origin_xyz}" rpy="${origin_rpy}"/>
+    </joint>
+  </xacro:macro>
+
+</robot>
