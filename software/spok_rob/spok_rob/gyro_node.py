@@ -185,6 +185,9 @@ class MinimalPublisher(Node):
     def timer_callback(self):
 
 
+        spok_roll = 0.0
+        spok_pitch = 0.0
+
         try:
             #Read Accelerometer raw value
             accX = read_raw_data(ACCEL_XOUT_H)
@@ -264,13 +267,12 @@ class MinimalPublisher(Node):
 
             print("Angle X: " + str(kalAngleX)+"   " +"Angle Y: " + str(kalAngleY))
             #print(str(roll)+"  "+str(gyroXAngle)+"  "+str(compAngleX)+"  "+str(kalAngleX)+"  "+str(pitch)+"  "+str(gyroYAngle)+"  "+str(compAngleY)+"  "+str(kalAngleY))
-            time.sleep(0.005)
+            
+            spok_roll = kalAngleX
+            spok_pitch = kalAngleY
 
         except Exception as exc:
             pass
-
-        spok_roll = kalAngleX
-        spok_pitch = kalAngleY
 
 
         msg = Float64MultiArray()
