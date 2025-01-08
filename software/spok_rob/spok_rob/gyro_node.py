@@ -171,6 +171,8 @@ gyroYAngle = pitch
 compAngleX = roll
 compAngleY = pitch
 
+timer = time.time()
+
 
 
 class MinimalPublisher(Node):
