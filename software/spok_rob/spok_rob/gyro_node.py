@@ -171,7 +171,7 @@ gyroYAngle = pitch
 compAngleX = roll
 compAngleY = pitch
 
-timer = time.time()
+timer_gyro = time.time()
 
 
 
@@ -201,8 +201,8 @@ class MinimalPublisher(Node):
         gyroY = read_raw_data(GYRO_YOUT_H)
         gyroZ = read_raw_data(GYRO_ZOUT_H)
 
-        dt = time.time() - timer
-        timer = time.time()
+        dt = time.time() - timer_gyro
+        timer_gyro = time.time()
 
         if (RestrictPitch):
             roll = math.atan2(accY,accZ) * radToDeg
