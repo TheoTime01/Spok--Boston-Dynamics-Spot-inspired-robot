@@ -32,7 +32,6 @@ setup(
         'console_scripts':
         [
         'virtual_joy_stick = quadruped_robot.virtual_joy_stick:main',
-        'joystick_controller = quadruped_robot.joystick_controller:main'
-        ]
+        'joystick_controller = quadruped_robot.joystick_controller:main'        ]
     },
 )
