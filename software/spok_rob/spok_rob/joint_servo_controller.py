@@ -96,10 +96,12 @@ class ServoController(Node):
     def joint_trajectory_callback(self, msg):
         for i, joint_name in enumerate(msg.joint_names):
             if joint_name in self.joint_map:
-                position = msg.points[0].positions[i]
+                position_radians = msg.points[0].positions[i]
+                position_degrees = position_radians * (180 / math.pi)  # Convert radians to degrees
                 factor = self.factor_map[joint_name]
-                pulse = 1500 + (position * factor * 500)  # Map radians to pulse width
-                self.pwm.setServoPulse(self.joint_map[joint_name], pulse)
+                pulse = factor*(1500 + (position_degrees * 500 / 90)) # Map degrees to pulse width
+                pulse_rounded = round(pulse)
+                self.pwm.setServoPulse(self.joint_map[joint_name], pulse_rounded)
 
 def main(args=None):
     rclpy.init(args=args)
