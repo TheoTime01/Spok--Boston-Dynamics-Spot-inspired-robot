@@ -28,7 +28,7 @@ class JoyTeleopNode(Node):
         # Declare and get parameters with default values
         self.declare_parameter("gait/swing_height", 0.0)
         self.declare_parameter("gait/nominal_height", 0.0)
-        self.declare_parameter("speed", 0.2)
+        self.declare_parameter("speed", 0.04)
         self.declare_parameter("turn", 1.0)
         
         self.swing_height = self.get_parameter("gait/swing_height").value
