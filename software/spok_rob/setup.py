@@ -21,6 +21,7 @@ setup(
     entry_points={
         'console_scripts': [
             'joint_servo_controller_node = spok_rob.joint_servo_controller:main',
+            'gyro_node = spok_rob.gyro_node:main',
 
         ],
     },
