@@ -108,6 +108,7 @@ class MPU6050Node(Node):
         self.radToDeg = 57.2957786
         self.kalAngleX = 0
         self.kalAngleY = 0
+        self.kalAngleZ = 0
 
         self.bus = smbus.SMBus(1)
         self.DeviceAddress = 0x68
@@ -152,6 +153,7 @@ class MPU6050Node(Node):
 
             gyroX = self.read_raw_data(self.GYRO_XOUT_H)
             gyroY = self.read_raw_data(self.GYRO_YOUT_H)
+            gyroZ = self.read_raw_data(self.GYRO_ZOUT_H)
 
             dt = time.time() - self.timer
             self.timer = time.time()
@@ -165,15 +167,17 @@ class MPU6050Node(Node):
 
             gyroXRate = gyroX / 131
             gyroYRate = gyroY / 131
+            gyroZRate = gyroZ / 131
 
             self.kalAngleX = self.kalmanX.getAngle(roll, gyroXRate, dt)
             self.kalAngleY = self.kalmanY.getAngle(pitch, gyroYRate, dt)
+            self.kalAngleZ = self.kalmanZ.getAngle(0, gyroYRate, dt)
 
             msg = Float32MultiArray()
-            msg.data = [self.kalAngleX, self.kalAngleY]
+            msg.data = [self.kalAngleX, self.kalAngleY, self.kalAngleZ]
             self.publisher_.publish(msg)
 
-            self.get_logger().info(f'Published Angles: X={self.kalAngleX:.2f}, Y={self.kalAngleY:.2f}')
+            self.get_logger().info(f'Published Angles: X={self.kalAngleX:.2f}, Y={self.kalAngleY:.2f}, Z={self.kalAngleZ:.2f}')
 
         except Exception as e:
             self.get_logger().error(f'Error reading sensor data: {e}')
