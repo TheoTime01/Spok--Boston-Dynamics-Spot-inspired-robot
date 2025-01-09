@@ -165,6 +165,7 @@ class MPU6050Node(Node):
             else:
                 roll = math.atan2(accY, accZ) * self.radToDeg
                 pitch = math.atan2(-accX, accZ) * self.radToDeg
+                yaw = math.atan2(accX, accY) * self.radToDeg
 
             gyroXRate = gyroX / 131
             gyroYRate = gyroY / 131
@@ -172,7 +173,7 @@ class MPU6050Node(Node):
 
             self.kalAngleX = self.kalmanX.getAngle(roll, gyroXRate, dt)
             self.kalAngleY = self.kalmanY.getAngle(pitch, gyroYRate, dt)
-            self.kalAngleZ = self.kalmanZ.getAngle(0, gyroYRate, dt)
+            self.kalAngleZ = self.kalmanZ.getAngle(yaw, gyroYRate, dt)
 
             msg = Float32MultiArray()
             msg.data = [self.kalAngleX, self.kalAngleY, self.kalAngleZ]
