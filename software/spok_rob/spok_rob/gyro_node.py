@@ -1,8 +1,7 @@
 import rclpy
 from rclpy.node import Node
-
-from std_msgs.msg import Float64MultiArray
-
+from std_msgs.msg import Float32MultiArray
+#from Kalman import KalmanAngle
 import smbus
 import time
 import math
@@ -36,29 +35,37 @@ class KalmanAngle:
         #step 1:
         self.rate = newRate - self.bias;    #new_rate is the latest Gyro measurement
         self.angle += dt * self.rate
+
         #Step 2:
         self.P[0][0] += dt * (dt*self.P[1][1] -self.P[0][1] - self.P[1][0] + self.QAngle)
         self.P[0][1] -= dt * self.P[1][1]
         self.P[1][0] -= dt * self.P[1][1]
         self.P[1][1] += self.QBias * dt
+
         #Step 3: Innovation
         y = newAngle - self.angle
+
         #Step 4: Innovation covariance
         s = self.P[0][0] + self.RMeasure
+
         #Step 5:    Kalman Gain
         K=[0.0,0.0]
         K[0] = self.P[0][0]/s
         K[1] = self.P[1][0]/s
+
         #Step 6: Update the Angle
         self.angle += K[0] * y
         self.bias  += K[1] * y
+
         #Step 7: Calculate estimation error covariance - Update the error covariance
         P00Temp = self.P[0][0]
         P01Temp = self.P[0][1]
+
         self.P[0][0] -= K[0] * P00Temp;
         self.P[0][1] -= K[0] * P01Temp;
         self.P[1][0] -= K[1] * P00Temp;
         self.P[1][1] -= K[1] * P01Temp;
+
         return self.angle
 
     def setAngle(self,angle):
@@ -84,217 +91,100 @@ class KalmanAngle:
 
     def  getRMeasure():
         return self.RMeasure
+    
 
 
+class MPU6050Node(Node):
+    def __init__(self):
+        super().__init__('mpu6050_node')
 
-kalmanX = KalmanAngle()
-kalmanY = KalmanAngle()
+        self.publisher_ = self.create_publisher(Float32MultiArray, 'kalman_angles', 10)
+        self.timer_ = self.create_timer(0.005, self.publish_angles)
 
-RestrictPitch = False
-radToDeg = 57.2957786
-kalAngleX = 0
-kalAngleY = 0
+        self.kalmanX = KalmanAngle()
+        self.kalmanY = KalmanAngle()
 
-PWR_MGMT_1   = 0x6B
-SMPLRT_DIV   = 0x19
-CONFIG       = 0x1A
-GYRO_CONFIG  = 0x1B
-INT_ENABLE   = 0x38
-ACCEL_XOUT_H = 0x3B
-ACCEL_YOUT_H = 0x3D
-ACCEL_ZOUT_H = 0x3F
-GYRO_XOUT_H  = 0x43
-GYRO_YOUT_H  = 0x45
-GYRO_ZOUT_H  = 0x47
+        self.RestrictPitch = False
+        self.radToDeg = 57.2957786
+        self.kalAngleX = 0
+        self.kalAngleY = 0
 
+        self.bus = smbus.SMBus(1)
+        self.DeviceAddress = 0x68
 
-def MPU_Init():
-	#write to sample rate register
-	bus.write_byte_data(DeviceAddress, SMPLRT_DIV, 7)
+        self.PWR_MGMT_1 = 0x6B
+        self.SMPLRT_DIV = 0x19
+        self.CONFIG = 0x1A
+        self.GYRO_CONFIG = 0x1B
+        self.INT_ENABLE = 0x38
+        self.ACCEL_XOUT_H = 0x3B
+        self.ACCEL_YOUT_H = 0x3D
+        self.ACCEL_ZOUT_H = 0x3F
+        self.GYRO_XOUT_H = 0x43
+        self.GYRO_YOUT_H = 0x45
+        self.GYRO_ZOUT_H = 0x47
 
-	#Write to power management register
-	bus.write_byte_data(DeviceAddress, PWR_MGMT_1, 1)
+        self.MPU_Init()
+        time.sleep(1)
 
-	#Write to Configuration register
-	#Setting DLPF (last three bit of 0X1A to 6 i.e '110' It removes the noise due to vibration.) https://ulrichbuschbaum.wordpress.com/2015/01/18/using-the-mpu6050s-dlpf/
-	bus.write_byte_data(DeviceAddress, CONFIG, int('0000110',2))
+        self.timer = time.time()
 
-	#Write to Gyro configuration register
-	bus.write_byte_data(DeviceAddress, GYRO_CONFIG, 24)
+    def MPU_Init(self):
+        self.bus.write_byte_data(self.DeviceAddress, self.SMPLRT_DIV, 7)
+        self.bus.write_byte_data(self.DeviceAddress, self.PWR_MGMT_1, 1)
+        self.bus.write_byte_data(self.DeviceAddress, self.CONFIG, int('0000110', 2))
+        self.bus.write_byte_data(self.DeviceAddress, self.GYRO_CONFIG, 24)
+        self.bus.write_byte_data(self.DeviceAddress, self.INT_ENABLE, 1)
 
-	#Write to interrupt enable register
-	bus.write_byte_data(DeviceAddress, INT_ENABLE, 1)
-
-
-def read_raw_data(addr):
-	#Accelero and Gyro value are 16-bit
-        high = bus.read_byte_data(DeviceAddress, addr)
-        low = bus.read_byte_data(DeviceAddress, addr+1)
-
-        #concatenate higher and lower value
+    def read_raw_data(self, addr):
+        high = self.bus.read_byte_data(self.DeviceAddress, addr)
+        low = self.bus.read_byte_data(self.DeviceAddress, addr + 1)
         value = ((high << 8) | low)
-
-        #to get signed value from mpu6050
-        if(value > 32768):
-                value = value - 65536
+        if value > 32768:
+            value -= 65536
         return value
 
+    def publish_angles(self):
+        try:
+            accX = self.read_raw_data(self.ACCEL_XOUT_H)
+            accY = self.read_raw_data(self.ACCEL_YOUT_H)
+            accZ = self.read_raw_data(self.ACCEL_ZOUT_H)
 
+            gyroX = self.read_raw_data(self.GYRO_XOUT_H)
+            gyroY = self.read_raw_data(self.GYRO_YOUT_H)
 
+            dt = time.time() - self.timer
+            self.timer = time.time()
 
-
-bus = smbus.SMBus(1) 	# or bus = smbus.SMBus(0) for older version boards
-DeviceAddress = 0x68   # MPU6050 device address
-
-MPU_Init()
-
-time.sleep(1)
-#Read Accelerometer raw value
-accX = read_raw_data(ACCEL_XOUT_H)
-accY = read_raw_data(ACCEL_YOUT_H)
-accZ = read_raw_data(ACCEL_ZOUT_H)
-
-#print(accX,accY,accZ)
-#print(math.sqrt((accY**2)+(accZ**2)))
-if (RestrictPitch):
-    roll = math.atan2(accY,accZ) * radToDeg
-    pitch = math.atan(-accX/math.sqrt((accY**2)+(accZ**2))) * radToDeg
-else:
-    #roll = math.atan(accY/math.sqrt((accX**2)+(accZ**2))) * radToDeg
-    roll = math.atan2(accY,accZ) * radToDeg
-    pitch = math.atan2(-accX,accZ) * radToDeg
-print(roll)
-kalmanX.setAngle(roll)
-kalmanY.setAngle(pitch)
-gyroXAngle = roll
-gyroYAngle = pitch
-compAngleX = roll
-compAngleY = pitch
-
-timer_gyro = time.time()
-
-
-
-class MinimalPublisher(Node):
-
-    def __init__(self):
-        super().__init__('gyro_publisher')
-        self.publisher_ = self.create_publisher(Float64MultiArray, 'gyro', 10)
-        timer_period = 0.005  # seconds
-        self.timer = self.create_timer(timer_period, self.timer_callback)
-        self.i = 0
-
-    def timer_callback(self):
-
-
-        spok_roll = 0.0
-        spok_pitch = 0.0
-
-        #try:
-        #Read Accelerometer raw value
-        accX = read_raw_data(ACCEL_XOUT_H)
-        accY = read_raw_data(ACCEL_YOUT_H)
-        accZ = read_raw_data(ACCEL_ZOUT_H)
-
-        #Read Gyroscope raw value
-        gyroX = read_raw_data(GYRO_XOUT_H)
-        gyroY = read_raw_data(GYRO_YOUT_H)
-        gyroZ = read_raw_data(GYRO_ZOUT_H)
-
-        dt = time.time() - timer_gyro
-        timer_gyro = time.time()
-
-        if (RestrictPitch):
-            roll = math.atan2(accY,accZ) * radToDeg
-            pitch = math.atan(-accX/math.sqrt((accY**2)+(accZ**2))) * radToDeg
-        else:
-            #roll = math.atan(accY/math.sqrt((accX**2)+(accZ**2))) * radToDeg
-            roll = math.atan2(accY,accZ) * radToDeg
-            pitch = math.atan2(-accX,accZ) * radToDeg
-
-        gyroXRate = gyroX/131
-        gyroYRate = gyroY/131
-
-        if (RestrictPitch):
-
-            if((roll < -90 and kalAngleX >90) or (roll > 90 and kalAngleX < -90)):
-                kalmanX.setAngle(roll)
-                complAngleX = roll
-                kalAngleX   = roll
-                gyroXAngle  = roll
+            if self.RestrictPitch:
+                roll = math.atan2(accY, accZ) * self.radToDeg
+                pitch = math.atan(-accX / math.sqrt((accY ** 2) + (accZ ** 2))) * self.radToDeg
             else:
-                kalAngleX = kalmanX.getAngle(roll,gyroXRate,dt)
+                roll = math.atan2(accY, accZ) * self.radToDeg
+                pitch = math.atan2(-accX, accZ) * self.radToDeg
 
-            if(abs(kalAngleX)>90):
-                gyroYRate  = -gyroYRate
-                kalAngleY  = kalmanY.getAngle(pitch,gyroYRate,dt)
-        else:
+            gyroXRate = gyroX / 131
+            gyroYRate = gyroY / 131
 
-            if((pitch < -90 and kalAngleY >90) or (pitch > 90 and kalAngleY < -90)):
-                kalmanY.setAngle(pitch)
-                complAngleY = pitch
-                kalAngleY   = pitch
-                gyroYAngle  = pitch
-            else:
-                kalAngleY = kalmanY.getAngle(pitch,gyroYRate,dt)
+            self.kalAngleX = self.kalmanX.getAngle(roll, gyroXRate, dt)
+            self.kalAngleY = self.kalmanY.getAngle(pitch, gyroYRate, dt)
 
-            if(abs(kalAngleY)>90):
-                gyroXRate  = -gyroXRate
-                kalAngleX = kalmanX.getAngle(roll,gyroXRate,dt)
+            msg = Float32MultiArray()
+            msg.data = [self.kalAngleX, self.kalAngleY]
+            self.publisher_.publish(msg)
 
-            if((roll < -90 and kalAngleX >90) or (roll > 90 and kalAngleX < -90)):
-                kalmanX.setAngle(roll)
-                complAngleX = roll
-                kalAngleX   = roll
-                gyroXAngle  = roll
-            else:
-                kalAngleX = kalmanX.getAngle(roll,gyroXRate,dt)
+            self.get_logger().info(f'Published Angles: X={self.kalAngleX:.2f}, Y={self.kalAngleY:.2f}')
 
-            if(abs(kalAngleX)>90):
-                gyroYRate  = -gyroYRate
-                kalAngleY  = kalmanY.getAngle(pitch,gyroYRate,dt)
-
-        #angle = (rate of change of angle) * change in time
-        gyroXAngle = gyroXRate * dt
-        gyroYAngle = gyroYAngle * dt
-
-        #compAngle = constant * (old_compAngle + angle_obtained_from_gyro) + constant * angle_obtained from accelerometer
-        compAngleX = 0.93 * (compAngleX + gyroXRate * dt) + 0.07 * roll
-        compAngleY = 0.93 * (compAngleY + gyroYRate * dt) + 0.07 * pitch
-
-        if ((gyroXAngle < -180) or (gyroXAngle > 180)):
-            gyroXAngle = kalAngleX
-        if ((gyroYAngle < -180) or (gyroYAngle > 180)):
-            gyroYAngle = kalAngleY
-
-        print("Angle X: " + str(kalAngleX)+"   " +"Angle Y: " + str(kalAngleY))
-        #print(str(roll)+"  "+str(gyroXAngle)+"  "+str(compAngleX)+"  "+str(kalAngleX)+"  "+str(pitch)+"  "+str(gyroYAngle)+"  "+str(compAngleY)+"  "+str(kalAngleY))
-        
-        spok_roll = kalAngleX
-        spok_pitch = kalAngleY
-
-        #except Exception as exc:
-        #    pass
-
-
-        msg = Float64MultiArray()
-        msg.data = [spok_roll, spok_pitch]
-        self.publisher_.publish(msg)
+        except Exception as e:
+            self.get_logger().error(f'Error reading sensor data: {e}')
 
 
 def main(args=None):
     rclpy.init(args=args)
-
-    minimal_publisher = MinimalPublisher()
-
-    rclpy.spin(minimal_publisher)
-
-    # Destroy the node explicitly
-    # (optional - otherwise it will be done automatically
-    # when the garbage collector destroys the node object)
-    minimal_publisher.destroy_node()
+    mpu6050_node = MPU6050Node()
+    rclpy.spin(mpu6050_node)
+    mpu6050_node.destroy_node()
     rclpy.shutdown()
-
 
 if __name__ == '__main__':
     main()
