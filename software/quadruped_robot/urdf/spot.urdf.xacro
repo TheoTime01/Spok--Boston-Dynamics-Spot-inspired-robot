@@ -961,7 +961,94 @@
       <parameters>$(find quadruped_robot)/config/spot_control.yaml</parameters>
     </plugin>
   </gazebo>
-  
+
+  <!-- Sonar sensor 1 in 100fps -->
+  <gazebo reference="base_link">
+    <sensor name="sonar_1" type="ray">
+      <pose>-0.2 0.02 0 0 0 3.14</pose>
+      <always_on>true</always_on>
+      <visualize>false</visualize>
+      <update_rate>5</update_rate>
+      <ray>
+        <scan>
+          <horizontal>
+            <samples>5</samples>
+            <resolution>1.000000</resolution>
+            <min_angle>-0.12</min_angle>
+            <max_angle>0.12</max_angle>
+          </horizontal>
+          <vertical>
+            <samples>5</samples>
+            <resolution>1.000000</resolution>
+            <min_angle>-0.12</min_angle>
+            <max_angle>0.12</max_angle>
+          </vertical>
+        </scan>
+        <range>
+          <min>0.02</min>
+          <max>10</max>
+          <resolution>0.01</resolution>
+        </range>
+        <noise>
+          <type>gaussian</type>
+          <mean>0.0</mean>
+          <stddev>0.01</stddev>
+        </noise>
+      </ray>
+      <plugin name="sonar_1" filename="libgazebo_ros_ray_sensor.so">
+        <ros>
+          <remapping>~/out:=sonar_1</remapping>
+        </ros>
+        <output_type>sensor_msgs/Range</output_type>
+        <radiation_type>ultrasound</radiation_type>
+        <frame_name>base_link</frame_name>
+      </plugin>
+    </sensor>
+  </gazebo>
+
+  <!-- Sonar sensor 2 in 100fps -->
+  <gazebo reference="base_link">
+    <sensor name="sonar_2" type="ray">
+      <pose>-0.2 -0.02 0 0 0 3.14</pose>
+      <always_on>true</always_on>
+      <visualize>false</visualize>
+      <update_rate>5</update_rate>
+      <ray>
+        <scan>
+          <horizontal>
+            <samples>5</samples>
+            <resolution>1.000000</resolution>
+            <min_angle>-0.12</min_angle>
+            <max_angle>0.12</max_angle>
+          </horizontal>
+          <vertical>
+            <samples>5</samples>
+            <resolution>1.000000</resolution>
+            <min_angle>-0.12</min_angle>
+            <max_angle>0.12</max_angle>
+          </vertical>
+        </scan>
+        <range>
+          <min>0.02</min>
+          <max>10</max>
+          <resolution>0.01</resolution>
+        </range>
+        <noise>
+          <type>gaussian</type>
+          <mean>0.0</mean>
+          <stddev>0.01</stddev>
+        </noise>
+      </ray>
+      <plugin name="sonar_2" filename="libgazebo_ros_ray_sensor.so">
+        <ros>
+          <remapping>~/out:=sonar_2</remapping>
+        </ros>
+        <output_type>sensor_msgs/Range</output_type>
+        <radiation_type>ultrasound</radiation_type>
+        <frame_name>base_link</frame_name>
+      </plugin>
+    </sensor>
+  </gazebo>
 
 
 </robot>
