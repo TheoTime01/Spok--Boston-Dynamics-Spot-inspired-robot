@@ -33,7 +33,7 @@ setup(
         [
         'virtual_joy_stick = quadruped_robot.virtual_joy_stick:main',
         'joystick_controller = quadruped_robot.joystick_controller:main',
-        'camera_node = quadruped_robot.camera_view:main'
+        'camera_sonar_view_node = quadruped_robot.camera_sonar_view:main'
         ]
     },
 )
