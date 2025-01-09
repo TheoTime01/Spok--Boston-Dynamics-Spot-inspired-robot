@@ -103,6 +103,7 @@ class MPU6050Node(Node):
 
         self.kalmanX = KalmanAngle()
         self.kalmanY = KalmanAngle()
+        self.kalmanZ = KalmanAngle()
 
         self.RestrictPitch = False
         self.radToDeg = 57.2957786
