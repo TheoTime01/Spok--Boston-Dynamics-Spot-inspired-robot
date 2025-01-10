@@ -4,6 +4,7 @@ import smbus
 import rclpy
 from rclpy.node import Node
 from trajectory_msgs.msg import JointTrajectory
+from std_msgs.msg import Float32MultiArray
 
 class PCA9685:
     __SUBADR1 = 0x02
@@ -64,6 +65,10 @@ class ServoController(Node):
             self.joint_trajectory_callback,
             10
         )
+        self.gyro_x = 0
+        self.gyro_y = 0
+
+        self.subscription_gyro = self.create_subscription(Float32MultiArray, 'kalman_angles', self.adapt_callback, 10)
         self.joint_map = {
             'front_left_shoulder': 13,
             'front_right_shoulder': 12,
@@ -95,13 +100,39 @@ class ServoController(Node):
 
     def joint_trajectory_callback(self, msg):
         for i, joint_name in enumerate(msg.joint_names):
-            if joint_name in self.joint_map:
+            if (joint_name in self.joint_map):
                 position_radians = msg.points[0].positions[i]
                 position_degrees = position_radians * (180 / math.pi)  # Convert radians to degrees
                 factor = self.factor_map[joint_name]
                 pulse = factor*(1500 + (position_degrees * 500 / 90)) # Map degrees to pulse width
+                if joint_name == 'front_right_foot':
+                    if self.gyro_x < -4:
+                        pulse += 5
+                    if self.gyro_x > 4:
+                        pulse -+ 5
+                if joint_name == 'front_left_foot':
+                    if self.gyro_x < -4:
+                        pulse += 5
+                    if self.gyro_x > 4:
+                        pulse -+ 5
+                if joint_name == 'rear_right_foot':
+                    if self.gyro_x < -4:
+                        pulse += 5
+                    if self.gyro_x > 4:
+                        pulse -+ 5
+                if joint_name == 'rear_left_foot':
+                    if self.gyro_x < -4:
+                        pulse += 5
+                    if self.gyro_x > 4:
+                        pulse -+ 5
                 pulse_rounded = round(pulse)
                 self.pwm.setServoPulse(self.joint_map[joint_name], pulse_rounded)
+    
+
+
+    def adapt_callback(self, msg):
+        self.gyro_x = msg.data[0]
+        self.gyro_y = msg.data[1]
 
 def main(args=None):
     rclpy.init(args=args)

@@ -165,7 +165,7 @@ class MPU6050Node(Node):
             else:
                 roll = math.atan2(accY, accZ) * self.radToDeg
                 pitch = math.atan2(-accX, accZ) * self.radToDeg
-                yaw = math.atan2(accX, accY) * self.radToDeg
+                yaw = math.atan2(-accY, -accX) * self.radToDeg
 
             gyroXRate = gyroX / 131
             gyroYRate = gyroY / 131
