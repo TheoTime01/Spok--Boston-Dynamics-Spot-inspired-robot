@@ -67,6 +67,9 @@ class ServoController(Node):
         )
         self.gyro_x = 0
         self.gyro_y = 0
+        
+        self.correc_x = 0
+        self.correc_y = 0
 
         self.subscription_gyro = self.create_subscription(Float32MultiArray, 'kalman_angles', self.adapt_callback, 10)
         self.joint_map = {
@@ -86,7 +89,7 @@ class ServoController(Node):
         self.factor_map = {
             'front_left_shoulder': 1.0267,
             'front_right_shoulder': 1.0,
-            'rear_left_shoulder': 1.0333,
+            'rear_left_shoulder': 1.133,
             'rear_right_shoulder': 1.12,
             'front_right_leg': 0.7153,
             'front_left_leg': 1.8357,
@@ -107,24 +110,28 @@ class ServoController(Node):
                 pulse = factor*(1500 + (position_degrees * 500 / 90)) # Map degrees to pulse width
                 if joint_name == 'front_right_foot':
                     if self.gyro_x < -4:
-                        pulse += 5
+                        self.correc_x += 5
                     if self.gyro_x > 4:
-                        pulse -+ 5
+                        self.correc_x -+ 5
+                    pulse += self.correc_x
                 if joint_name == 'front_left_foot':
                     if self.gyro_x < -4:
-                        pulse += 5
+                        self.correc_x += 5
                     if self.gyro_x > 4:
-                        pulse -+ 5
+                        self.correc_x -+ 5
+                    pulse += self.correc_x
                 if joint_name == 'rear_right_foot':
                     if self.gyro_x < -4:
-                        pulse += 5
+                        self.correc_x += 5
                     if self.gyro_x > 4:
-                        pulse -+ 5
+                        self.correc_x -+ 5
+                    pulse += self.correc_x
                 if joint_name == 'rear_left_foot':
                     if self.gyro_x < -4:
-                        pulse += 5
+                        self.correc_x += 5
                     if self.gyro_x > 4:
-                        pulse -+ 5
+                        self.correc_x -+ 5
+                    pulse += self.correc_x
                 pulse_rounded = round(pulse)
                 self.pwm.setServoPulse(self.joint_map[joint_name], pulse_rounded)
     
