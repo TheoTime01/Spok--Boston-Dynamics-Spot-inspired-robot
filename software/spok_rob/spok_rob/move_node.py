@@ -116,7 +116,7 @@ class ServoController(Node):
     def adapt_callback(self, msg):
         self.gyro_x = msg.data[0]
         self.gyro_y = msg.data[1]
-        print(self.gyro_x)
+        #print(self.gyro_x)
 
 
     # def sequence_forward(self):
@@ -128,6 +128,7 @@ class ServoController(Node):
     #         print(t)
 
     def balance(self):
+        print("start balance")
         while (self.gyro_x < -3) or (self.gyro_x > 3) or (self.gyro_y < -3) or (self.gyro_y > 3):
             if self.gyro_x < -3:
                 self.footRL_value += 3
