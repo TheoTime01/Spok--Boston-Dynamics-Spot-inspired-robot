@@ -87,6 +87,12 @@ class ServoController(Node):
         self.footFL_value = 840
         self.footRR_value = 2300
         self.footRL_value = 840
+        
+
+        self.subscription_gyro = self.create_subscription(Float32MultiArray, 'kalman_angles', self.adapt_callback, 10)
+        
+        self.pwm = PCA9685()
+        self.pwm.setPWMFreq(50)
 
 
         self.setServoPulse(self.shoulderFL, self.shoulderFL_value)
@@ -101,12 +107,6 @@ class ServoController(Node):
         self.setServoPulse(self.footFL, self.footFL_value)
         self.setServoPulse(self.footRR, self.footRR_value)
         self.setServoPulse(self.footRL, self.footRL_value)
-        
-
-        self.subscription_gyro = self.create_subscription(Float32MultiArray, 'kalman_angles', self.adapt_callback, 10)
-        
-        self.pwm = PCA9685()
-        self.pwm.setPWMFreq(50)
 
         self.balance()
 
@@ -136,7 +136,6 @@ class ServoController(Node):
                 self.footFL_value -= 3
                 self.footRR_value -= 3
                 self.footFR_value -= 3
-
             if self.gyro_y < -3:
                 self.footRL_value += 3
                 self.footFL_value -= 3
@@ -147,6 +146,18 @@ class ServoController(Node):
                 self.footFL_value += 3
                 self.footRR_value += 3
                 self.footFR_value -= 3
+            self.setServoPulse(self.shoulderFL, self.shoulderFL_value)
+            self.setServoPulse(self.shoulderFR, self.shoulderFR_value)
+            self.setServoPulse(self.shoulderRL, self.shoulderRL_value)
+            self.setServoPulse(self.shoulderRR, self.shoulderRR_value)
+            self.setServoPulse(self.armFR, self.armFR_value)
+            self.setServoPulse(self.armFL, self.armFL_value)
+            self.setServoPulse(self.armRR, self.armRR_value)
+            self.setServoPulse(self.armRL, self.armRL_value)
+            self.setServoPulse(self.footFR, self.footFR_value)
+            self.setServoPulse(self.footFL, self.footFL_value)
+            self.setServoPulse(self.footRR, self.footRR_value)
+            self.setServoPulse(self.footRL, self.footRL_value)
         print("Balanced !")
         
 
