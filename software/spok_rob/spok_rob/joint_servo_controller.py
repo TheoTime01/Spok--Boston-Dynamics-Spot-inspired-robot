@@ -110,7 +110,7 @@ class ServoController(Node):
                 pulse = factor*(1500 + (position_degrees * 500 / 90)) # Map degrees to pulse width
 
                 # Apply IMU-based correction (e.g., proportional to gyro readings)
-                imu_correction = self.gyro_x if 'shoulder' in joint_name else self.gyro_y
+                imu_correction = self.gyro_y if 'shoulder' in joint_name else self.gyro_x
                 position_degrees += imu_correction
                 
                 pulse = factor * (1500 + (position_degrees * 500 / 90))  # Map degrees to pulse width
