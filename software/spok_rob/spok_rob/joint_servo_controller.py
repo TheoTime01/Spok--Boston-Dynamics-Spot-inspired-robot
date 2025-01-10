@@ -65,11 +65,11 @@ class ServoController(Node):
             self.joint_trajectory_callback,
             10
         )
+
+        #values of IMU
         self.gyro_x = 0
         self.gyro_y = 0
         
-        self.correc_x = 0
-        self.correc_y = 0
 
         self.subscription_gyro = self.create_subscription(Float32MultiArray, 'kalman_angles', self.adapt_callback, 10)
         self.joint_map = {
@@ -108,30 +108,12 @@ class ServoController(Node):
                 position_degrees = position_radians * (180 / math.pi)  # Convert radians to degrees
                 factor = self.factor_map[joint_name]
                 pulse = factor*(1500 + (position_degrees * 500 / 90)) # Map degrees to pulse width
-                if joint_name == 'front_right_foot':
-                    if self.gyro_x < -4:
-                        self.correc_x += 5
-                    if self.gyro_x > 4:
-                        self.correc_x -+ 5
-                    pulse += self.correc_x
-                if joint_name == 'front_left_foot':
-                    if self.gyro_x < -4:
-                        self.correc_x += 5
-                    if self.gyro_x > 4:
-                        self.correc_x -+ 5
-                    pulse += self.correc_x
-                if joint_name == 'rear_right_foot':
-                    if self.gyro_x < -4:
-                        self.correc_x += 5
-                    if self.gyro_x > 4:
-                        self.correc_x -+ 5
-                    pulse += self.correc_x
-                if joint_name == 'rear_left_foot':
-                    if self.gyro_x < -4:
-                        self.correc_x += 5
-                    if self.gyro_x > 4:
-                        self.correc_x -+ 5
-                    pulse += self.correc_x
+
+                # Apply IMU-based correction (e.g., proportional to gyro readings)
+                imu_correction = self.gyro_x if 'shoulder' in joint_name else self.gyro_y
+                position_degrees += imu_correction
+                
+                pulse = factor * (1500 + (position_degrees * 500 / 90))  # Map degrees to pulse width
                 pulse_rounded = round(pulse)
                 self.pwm.setServoPulse(self.joint_map[joint_name], pulse_rounded)
     
