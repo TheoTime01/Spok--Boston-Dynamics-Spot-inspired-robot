@@ -28,7 +28,7 @@ class JoyTeleopNode(Node):
         # Declare and get parameters with default values
         self.declare_parameter("gait/swing_height", 0.0)
         self.declare_parameter("gait/nominal_height", 0.0)
-        self.declare_parameter("speed", 0.04)
+        self.declare_parameter("speed", 0.2)
         self.declare_parameter("turn", 1.0)
         
         self.swing_height = self.get_parameter("gait/swing_height").value
@@ -58,12 +58,12 @@ class JoyTeleopNode(Node):
         """
         # Create Twist message for velocity
         twist = Twist()
-        twist.linear.x = data.axes[1] * self.speed
-        twist.linear.y = data.buttons[4] * data.axes[0] * self.speed
+        twist.linear.x = data.axes[7] * self.speed
+        twist.linear.y = data.buttons[4] * data.axes[6] * self.speed
         twist.linear.z = 0.0
         twist.angular.x = 0.0
         twist.angular.y = 0.0
-        twist.angular.z = (not data.buttons[4]) * data.axes[0] * self.turn
+        twist.angular.z = (not data.buttons[4]) * data.axes[6] * self.turn
         self.velocity_publisher.publish(twist)
         
         # Create PoseLite message
