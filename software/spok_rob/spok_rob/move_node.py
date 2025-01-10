@@ -62,6 +62,9 @@ class ServoController(Node):
     def __init__(self):
         super().__init__('servo_controller')
 
+        self.gyro_x = 0
+        self.gyro_y = 0
+
         self.shoulderFR = 12
         self.shoulderFL = 13
         self.shoulderRR = 3
