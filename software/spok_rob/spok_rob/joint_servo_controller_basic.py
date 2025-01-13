@@ -54,24 +54,14 @@ class PCA9685:
         pulse = pulse * 4096 / 20000
         self.setPWM(channel, 0, int(pulse))
 
+
 class ServoController(Node):
     def __init__(self):
         super().__init__('servo_controller')
         self.pwm = PCA9685()
         self.pwm.setPWMFreq(50)
-        self.subscription = self.create_subscription(
-            JointTrajectory,
-            '/joint_group_effort_controller/joint_trajectory',
-            self.joint_trajectory_callback,
-            10
-        )
-        self.gyro_x = 0
-        self.gyro_y = 0
-        
-        self.correc_x = 0
-        self.correc_y = 0
+        self.subscription = self.create_subscription(Int32MultiArray, '/control_servo_node', self.servo_callback, 10)
 
-        self.subscription_servo = self.create_subscription(Int32MultiArray, 'servo_values', self.servo_values_callback, 10)
         self.joint_map = {
             'front_left_shoulder': 13,
             'front_right_shoulder': 12,
@@ -86,25 +76,12 @@ class ServoController(Node):
             'rear_right_foot': 4,
             'rear_left_foot': 5
         }
-        self.factor_map = {
-            'front_left_shoulder': 1.0267,
-            'front_right_shoulder': 1.0,
-            'rear_left_shoulder': 1.133,
-            'rear_right_shoulder': 1.12,
-            'front_right_leg': 0.7153,
-            'front_left_leg': 1.8357,
-            'rear_right_leg': 0.7665,
-            'rear_left_leg': 1.8013,
-            'front_right_foot': 1.0721,
-            'front_left_foot': 0.3784,
-            'rear_right_foot': 1.0360,
-            'rear_left_foot': 0.3784
-        }
 
-    def joint_trajectory_callback(self, msg):
+
+    def servo_callback(self, msg):
         values_list = msg.data
-        values_list
-        self.pwm.setServoPulse(self.joint_map[joint_name], pulse_rounded)
+        print(values_list)
+        #self.pwm.setServoPulse(self.joint_map[joint_name], pulse_rounded)
     
 
 def main(args=None):
