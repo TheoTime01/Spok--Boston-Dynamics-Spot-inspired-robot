@@ -1,0 +1,49 @@
+{
+  "sequence": [
+    {
+      "time": 0.0,
+      "legs": {
+        "frontLeft": { "hip": 0, "knee": 45, "ankle": -30, "pins": { "shoulder": 13, "leg": 14, "foot": 10 } },
+        "frontRight": { "hip": 0, "knee": 45, "ankle": -30, "pins": { "shoulder": 12, "leg": 15, "foot": 11 } },
+        "backLeft": { "hip": 0, "knee": 45, "ankle": -30, "pins": { "shoulder": 2, "leg": 1, "foot": 5 } },
+        "backRight": { "hip": 0, "knee": 45, "ankle": -30, "pins": { "shoulder": 3, "leg": 0, "foot": 4 } }
+      }
+    },
+    {
+      "time": 0.5,
+      "legs": {
+        "frontLeft": { "hip": 15, "knee": 50, "ankle": -35, "pins": { "shoulder": 13, "leg": 14, "foot": 10 } },
+        "frontRight": { "hip": -15, "knee": 40, "ankle": -25, "pins": { "shoulder": 12, "leg": 15, "foot": 11 } },
+        "backLeft": { "hip": -15, "knee": 40, "ankle": -25, "pins": { "shoulder": 2, "leg": 1, "foot": 5 } },
+        "backRight": { "hip": 15, "knee": 50, "ankle": -35, "pins": { "shoulder": 3, "leg": 0, "foot": 4 } }
+      }
+    },
+    {
+      "time": 1.0,
+      "legs": {
+        "frontLeft": { "hip": 30, "knee": 60, "ankle": -40, "pins": { "shoulder": 13, "leg": 14, "foot": 10 } },
+        "frontRight": { "hip": -30, "knee": 30, "ankle": -20, "pins": { "shoulder": 12, "leg": 15, "foot": 11 } },
+        "backLeft": { "hip": -30, "knee": 30, "ankle": -20, "pins": { "shoulder": 2, "leg": 1, "foot": 5 } },
+        "backRight": { "hip": 30, "knee": 60, "ankle": -40, "pins": { "shoulder": 3, "leg": 0, "foot": 4 } }
+      }
+    },
+    {
+      "time": 1.5,
+      "legs": {
+        "frontLeft": { "hip": 15, "knee": 50, "ankle": -35, "pins": { "shoulder": 13, "leg": 14, "foot": 10 } },
+        "frontRight": { "hip": -15, "knee": 40, "ankle": -25, "pins": { "shoulder": 12, "leg": 15, "foot": 11 } },
+        "backLeft": { "hip": -15, "knee": 40, "ankle": -25, "pins": { "shoulder": 2, "leg": 1, "foot": 5 } },
+        "backRight": { "hip": 15, "knee": 50, "ankle": -35, "pins": { "shoulder": 3, "leg": 0, "foot": 4 } }
+      }
+    },
+    {
+      "time": 2.0,
+      "legs": {
+        "frontLeft": { "hip": 0, "knee": 45, "ankle": -30, "pins": { "shoulder": 13, "leg": 14, "foot": 10 } },
+        "frontRight": { "hip": 0, "knee": 45, "ankle": -30, "pins": { "shoulder": 12, "leg": 15, "foot": 11 } },
+        "backLeft": { "hip": 0, "knee": 45, "ankle": -30, "pins": { "shoulder": 2, "leg": 1, "foot": 5 } },
+        "backRight": { "hip": 0, "knee": 45, "ankle": -30, "pins": { "shoulder": 3, "leg": 0, "foot": 4 } }
+      }
+    }
+  ]
+}

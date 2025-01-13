@@ -18,6 +18,7 @@ setup(
         (os.path.join('share', package_name, 'stl'   ), glob('stl/*')),
         (os.path.join('share', package_name, 'meshes'   ), glob('meshes/*')),
         (os.path.join('share', package_name, 'worlds'   ), glob('worlds/*')),
+        (os.path.join('share', package_name, 'json'   ), glob('json/*')),
     ],
 
     install_requires=['setuptools'],
@@ -33,7 +34,8 @@ setup(
         [
         'virtual_joy_stick = quadruped_robot.virtual_joy_stick:main',
         'joystick_controller = quadruped_robot.joystick_controller:main',
-        'camera_sonar_view_node = quadruped_robot.camera_sonar_view:main'
+        'camera_sonar_view_node = quadruped_robot.camera_sonar_view:main',
+        'manual_motion_node = quadruped_robot.manual_motion:main'
         ]
     },
 )
