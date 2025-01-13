@@ -62,6 +62,9 @@ class ServoController(Node):
     def __init__(self):
         super().__init__('servo_controller')
 
+        self.gyro_x = 0
+        self.gyro_y = 0
+
         self.shoulderFR = 12
         self.shoulderFL = 13
         self.shoulderRR = 3
@@ -95,36 +98,37 @@ class ServoController(Node):
         self.pwm.setPWMFreq(50)
 
 
-        self.setServoPulse(self.shoulderFL, self.shoulderFL_value)
-        self.setServoPulse(self.shoulderFR, self.shoulderFR_value)
-        self.setServoPulse(self.shoulderRL, self.shoulderRL_value)
-        self.setServoPulse(self.shoulderRR, self.shoulderRR_value)
-        self.setServoPulse(self.armFR, self.armFR_value)
-        self.setServoPulse(self.armFL, self.armFL_value)
-        self.setServoPulse(self.armRR, self.armRR_value)
-        self.setServoPulse(self.armRL, self.armRL_value)
-        self.setServoPulse(self.footFR, self.footFR_value)
-        self.setServoPulse(self.footFL, self.footFL_value)
-        self.setServoPulse(self.footRR, self.footRR_value)
-        self.setServoPulse(self.footRL, self.footRL_value)
+        self.pwm.setServoPulse(self.shoulderFL, self.shoulderFL_value)
+        self.pwm.setServoPulse(self.shoulderFR, self.shoulderFR_value)
+        self.pwm.setServoPulse(self.shoulderRL, self.shoulderRL_value)
+        self.pwm.setServoPulse(self.shoulderRR, self.shoulderRR_value)
+        self.pwm.setServoPulse(self.armFR, self.armFR_value)
+        self.pwm.setServoPulse(self.armFL, self.armFL_value)
+        self.pwm.setServoPulse(self.armRR, self.armRR_value)
+        self.pwm.setServoPulse(self.armRL, self.armRL_value)
+        self.pwm.setServoPulse(self.footFR, self.footFR_value)
+        self.pwm.setServoPulse(self.footFL, self.footFL_value)
+        self.pwm.setServoPulse(self.footRR, self.footRR_value)
+        self.pwm.setServoPulse(self.footRL, self.footRL_value)
 
         self.balance()
 
     def adapt_callback(self, msg):
         self.gyro_x = msg.data[0]
         self.gyro_y = msg.data[1]
-        print(self.gyro_x)
+        #print(self.gyro_x)
 
 
-    def sequence_forward(self):
-        with open('../json/forward.json', 'r') as file:
-            data_forward = json.load(file)
+    # def sequence_forward(self):
+    #     with open('../json/forward.json', 'r') as file:
+    #         data_forward = json.load(file)
 
-        for s in data_forward["sequence"]:
-            t = s["time"]
-            print(t)
+    #     for s in data_forward["sequence"]:
+    #         t = s["time"]
+    #         print(t)
 
     def balance(self):
+        print("start balance")
         while (self.gyro_x < -3) or (self.gyro_x > 3) or (self.gyro_y < -3) or (self.gyro_y > 3):
             if self.gyro_x < -3:
                 self.footRL_value += 3
@@ -146,18 +150,18 @@ class ServoController(Node):
                 self.footFL_value += 3
                 self.footRR_value += 3
                 self.footFR_value -= 3
-            self.setServoPulse(self.shoulderFL, self.shoulderFL_value)
-            self.setServoPulse(self.shoulderFR, self.shoulderFR_value)
-            self.setServoPulse(self.shoulderRL, self.shoulderRL_value)
-            self.setServoPulse(self.shoulderRR, self.shoulderRR_value)
-            self.setServoPulse(self.armFR, self.armFR_value)
-            self.setServoPulse(self.armFL, self.armFL_value)
-            self.setServoPulse(self.armRR, self.armRR_value)
-            self.setServoPulse(self.armRL, self.armRL_value)
-            self.setServoPulse(self.footFR, self.footFR_value)
-            self.setServoPulse(self.footFL, self.footFL_value)
-            self.setServoPulse(self.footRR, self.footRR_value)
-            self.setServoPulse(self.footRL, self.footRL_value)
+            self.pwm.setServoPulse(self.shoulderFL, self.shoulderFL_value)
+            self.pwm.setServoPulse(self.shoulderFR, self.shoulderFR_value)
+            self.pwm.setServoPulse(self.shoulderRL, self.shoulderRL_value)
+            self.pwm.setServoPulse(self.shoulderRR, self.shoulderRR_value)
+            self.pwm.setServoPulse(self.armFR, self.armFR_value)
+            self.pwm.setServoPulse(self.armFL, self.armFL_value)
+            self.pwm.setServoPulse(self.armRR, self.armRR_value)
+            self.pwm.setServoPulse(self.armRL, self.armRL_value)
+            self.pwm.setServoPulse(self.footFR, self.footFR_value)
+            self.pwm.setServoPulse(self.footFL, self.footFL_value)
+            self.pwm.setServoPulse(self.footRR, self.footRR_value)
+            self.pwm.setServoPulse(self.footRL, self.footRL_value)
         print("Balanced !")
         
 
