@@ -12,6 +12,7 @@ class ManualMotion(Node):
         # Declare and get the parameter for the JSON file path
         package_share_directory = get_package_share_directory('quadruped_robot')
         self.json_file_path = os.path.join(package_share_directory, 'json', 'motion_sequence.json')
+        print(self.json_file_path)
 
 
         # Create a publisher
@@ -46,20 +47,25 @@ class ManualMotion(Node):
                 time_step = step.get('time', 0.0)
                 legs = step.get('legs', {})
 
-                # Flatten the joint values into a list of integers
+                # Flatten the joint values into tuples
                 joint_values = []
                 for leg in ['frontLeft', 'frontRight', 'backLeft', 'backRight']:
                     if leg in legs:
-                        joint_values.extend([legs[leg].get('hip', 0), 
-                                             legs[leg].get('knee', 0), 
-                                             legs[leg].get('ankle', 0)])
+                        joint_values.extend([
+                            (legs[leg].get('hip', 0), legs[leg]["pins"].get('shoulder', 0)),
+                            (legs[leg].get('knee', 0), legs[leg]["pins"].get('leg', 0)),
+                            (legs[leg].get('ankle', 0), legs[leg]["pins"].get('foot', 0))
+                        ])
+
+                # Flatten tuples into a single list of integers
+                flattened_values = [value for pair in joint_values for value in pair]
 
                 # Create and publish the Int32MultiArray message
                 msg = Int32MultiArray()
-                msg.data = joint_values
+                msg.data = flattened_values
                 self.publisher_.publish(msg)
 
-                self.get_logger().info(f"Published step at time {time_step}: {joint_values}")
+                self.get_logger().info(f"Published step at time {time_step}: {flattened_values}")
 
                 # Simulate time delay between steps
                 self.get_clock().sleep_for(rclpy.duration.Duration(seconds=time_step))
