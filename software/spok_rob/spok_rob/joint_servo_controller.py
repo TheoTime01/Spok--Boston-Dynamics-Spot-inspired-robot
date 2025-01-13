@@ -87,17 +87,17 @@ class ServoController(Node):
             'rear_left_foot': 5
         }
         self.factor_map = {
-            'front_left_shoulder': 1.0267,
-            'front_right_shoulder': 1.0,
-            'rear_left_shoulder': 1.033,
-            'rear_right_shoulder': 1.12,
-            'front_right_leg': 0.7153,
-            'front_left_leg': 1.9357,
-            'rear_right_leg': 0.6665,
-            'rear_left_leg': 1.8013,
-            'front_right_foot': 1.0721,
-            'front_left_foot': 0.3784,
-            'rear_right_foot': 1.0360,
+            'front_left_shoulder': 1.0067,
+            'front_right_shoulder': 1.0200,
+            'rear_left_shoulder': 1.1200,
+            'rear_right_shoulder': 1.1067,
+            'front_right_leg': 0.6655,
+            'front_left_leg': 1.9865,
+            'rear_right_leg': 0.6828,
+            'rear_left_leg': 1.8512,
+            'front_right_foot': 1.0180,
+            'front_left_foot': 0.4009,
+            'rear_right_foot': 0.9595,
             'rear_left_foot': 0.3784
         }
 
