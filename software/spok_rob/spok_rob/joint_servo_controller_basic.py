@@ -62,27 +62,22 @@ class ServoController(Node):
         self.pwm.setPWMFreq(50)
         self.subscription = self.create_subscription(Int32MultiArray, '/control_servo_node', self.servo_callback, 10)
 
-        self.joint_map = {
-            'front_left_shoulder': 13,
-            'front_right_shoulder': 12,
-            'rear_left_shoulder': 2,
-            'rear_right_shoulder': 3,
-            'front_right_leg': 15,
-            'front_left_leg': 14,
-            'rear_right_leg': 0,
-            'rear_left_leg': 1,
-            'front_right_foot': 11,
-            'front_left_foot': 10,
-            'rear_right_foot': 4,
-            'rear_left_foot': 5
-        }
-
 
     def servo_callback(self, msg):
-        values_list = msg.data
-        print(values_list)
-        #self.pwm.setServoPulse(self.joint_map[joint_name], pulse_rounded)
-    
+        # Assuming the message contains the values in order of pin and pulse pairs
+        pin = None
+        pulse = None
+        for i, value in enumerate(msg.data):
+            if i % 2 == 0:  # Even index is for pin
+                pulse = value
+            else:  # Odd index is for pulse
+                pin = value
+                if pin is not None:
+                    # Set the servo pulse
+                    self.pwm.setServoPulse(pin, pulse)
+                    self.get_logger().info(f"Set servo {pin} to pulse {pulse}")
+
+
 
 def main(args=None):
     rclpy.init(args=args)
