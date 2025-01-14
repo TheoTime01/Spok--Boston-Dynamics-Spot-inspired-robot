@@ -96,16 +96,19 @@ class ServoController(Node):
         }
 
     def joint_trajectory_callback(self, msg):
-        for i, joint_name in enumerate(msg.joint_names):
-            if (joint_name in self.joint_map):
-                position_radians = msg.points[0].positions[i]
-                position_degrees = position_radians * (180 / math.pi)  # Convert radians to degrees
-                factor = self.factor_map[joint_name]
-                pulse = factor*(1480 + (position_degrees * 500 / 90)) # Map degrees to pulse width
+        try:
+            for i, joint_name in enumerate(msg.joint_names):
+                if joint_name in self.joint_map:
+                    position_radians = msg.points[0].positions[i]
+                    position_degrees = position_radians * (180 / math.pi)  # Convert radians to degrees
+                    factor = self.factor_map[joint_name]
+                    pulse = factor * (1490 + (position_degrees * 500 / 90))  # Map degrees to pulse width
 
-                pulse_rounded = round(pulse)
-                self.pwm.setServoPulse(self.joint_map[joint_name], pulse_rounded)
-    
+                    pulse_rounded = round(pulse)
+                    self.pwm.setServoPulse(self.joint_map[joint_name], pulse_rounded)
+        except Exception as e:
+            self.get_logger().error(f"Error in joint_trajectory_callback: {str(e)}")
+
 
 
 def main(args=None):
