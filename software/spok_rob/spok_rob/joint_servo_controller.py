@@ -66,9 +66,6 @@ class ServoController(Node):
             10
         )
 
-        #values of IMU
-        self.gyro_x = 0
-        self.gyro_y = 0
         
 
         self.subscription_gyro = self.create_subscription(Float32MultiArray, 'kalman_angles', self.adapt_callback, 10)
@@ -113,10 +110,6 @@ class ServoController(Node):
                 self.pwm.setServoPulse(self.joint_map[joint_name], pulse_rounded)
     
 
-
-    def adapt_callback(self, msg):
-        self.gyro_x = msg.data[0]
-        self.gyro_y = msg.data[1]
 
 def main(args=None):
     rclpy.init(args=args)
