@@ -107,13 +107,8 @@ class ServoController(Node):
                 position_radians = msg.points[0].positions[i]
                 position_degrees = position_radians * (180 / math.pi)  # Convert radians to degrees
                 factor = self.factor_map[joint_name]
-                pulse = factor*(1500 + (position_degrees * 500 / 90)) # Map degrees to pulse width
+                pulse = factor*(1490 + (position_degrees * 500 / 90)) # Map degrees to pulse width
 
-                # Apply IMU-based correction (e.g., proportional to gyro readings)
-                imu_correction = self.gyro_y if 'shoulder' in joint_name else self.gyro_x
-                position_degrees += imu_correction
-                
-                pulse = factor * (1500 + (position_degrees * 500 / 90))  # Map degrees to pulse width
                 pulse_rounded = round(pulse)
                 self.pwm.setServoPulse(self.joint_map[joint_name], pulse_rounded)
     
