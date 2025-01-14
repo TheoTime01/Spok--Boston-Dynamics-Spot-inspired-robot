@@ -58,7 +58,7 @@ class ServoController(Node):
     def __init__(self):
         super().__init__('servo_controller')
         self.pwm = PCA9685()
-        self.pwm.setPWMFreq(20)
+        self.pwm.setPWMFreq(50)
         self.subscription = self.create_subscription(
             JointTrajectory,
             '/joint_group_effort_controller/joint_trajectory',
@@ -101,7 +101,7 @@ class ServoController(Node):
                 position_radians = msg.points[0].positions[i]
                 position_degrees = position_radians * (180 / math.pi)  # Convert radians to degrees
                 factor = self.factor_map[joint_name]
-                pulse = factor*(1490 + (position_degrees * 500 / 90)) # Map degrees to pulse width
+                pulse = factor*(1480 + (position_degrees * 500 / 90)) # Map degrees to pulse width
 
                 pulse_rounded = round(pulse)
                 self.pwm.setServoPulse(self.joint_map[joint_name], pulse_rounded)
