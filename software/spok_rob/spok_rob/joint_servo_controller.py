@@ -57,8 +57,6 @@ class PCA9685:
 class ServoController(Node):
     def __init__(self):
         super().__init__('servo_controller')
-        self.pwm = PCA9685()
-        self.pwm.setPWMFreq(50)
         self.subscription = self.create_subscription(
             JointTrajectory,
             '/joint_group_effort_controller/joint_trajectory',
@@ -95,38 +93,39 @@ class ServoController(Node):
             'rear_left_foot': 0.3784
         }
 
-    def duty_cycle_to_pulse(self,duty_cycle, pwm_freq=50):
-        """
-        Convert a duty cycle percentage to pulse width (µs) and PCA9685 pulse value.
-        
-        :param duty_cycle: Duty cycle percentage (0 to 100%).
-        :param pwm_freq: PWM frequency in Hz (default is 50 Hz).
-        :return: (pulse_width_us, pulse_value) tuple.
-        """
-        # Calculate the PWM period in microseconds
-        pwm_period_us = 1_000_000 / pwm_freq  # Period = 1 / frequency, converted to µs
-        
-        # Calculate pulse width in microseconds
+    def duty_cycle_to_pulse(self, duty_cycle):
+        pwm_period_us = 20000
         pulse_width_us = (duty_cycle / 100) * pwm_period_us
-        
-        # Convert pulse width to PCA9685 pulse value (out of 4096)
         pulse_value = int((pulse_width_us * 4096) / pwm_period_us)
-        
         return pulse_value
 
     def joint_trajectory_callback(self, msg):
+        left_joints = []
+        right_joints = []
         try:
             for i, joint_name in enumerate(msg.joint_names):
                 if joint_name in self.joint_map:
                     position_radians = msg.points[0].positions[i]
                     position_degrees = position_radians * (180 / math.pi)  # Convert radians to degrees
+                    factor = self.factor_map[joint_name]
+                    pulse_2 = factor*(1500 + (position_degrees * 500 / 90)) # Map degrees to pulse width
+
                     dutycycle = position_degrees/18 + 3
                     pulse = self.duty_cycle_to_pulse(dutycycle)
                     pulse_rounded = round(pulse)
-                    self.pwm.setServoPulse(self.joint_map[joint_name], pulse_rounded)
-        except Exception as e:
-            self.get_logger().error(f"Error in joint_trajectory_callback for {joint_name}: {position_degrees}.deg {pulse_rounded}.us: {str(e)}")
+                    pulse_rounded_2 = round(pulse_2)
 
+                    if "left" in joint_name:
+                        left_joints.append(f"{joint_name}==[{pulse_rounded_2}]")
+                    elif "right" in joint_name:
+                        right_joints.append(f"{joint_name}==[{pulse_rounded_2}]")
+
+            print("\n".join(left_joints))
+            print("-------------")
+            print("\n".join(right_joints))
+            print("-------------")
+        except Exception as e:
+            self.get_logger().error(f"Error in joint_trajectory_callback: {str(e)}")
 
 
 def main(args=None):
