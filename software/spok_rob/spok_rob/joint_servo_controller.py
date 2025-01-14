@@ -66,9 +66,6 @@ class ServoController(Node):
             10
         )
 
-        
-
-        self.subscription_gyro = self.create_subscription(Float32MultiArray, 'kalman_angles', self.adapt_callback, 10)
         self.joint_map = {
             'front_left_shoulder': 13,
             'front_right_shoulder': 12,
