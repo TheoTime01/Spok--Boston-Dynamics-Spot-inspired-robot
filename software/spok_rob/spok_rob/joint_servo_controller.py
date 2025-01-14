@@ -65,13 +65,7 @@ class ServoController(Node):
             self.joint_trajectory_callback,
             10
         )
-        self.gyro_x = 0
-        self.gyro_y = 0
-        
-        self.correc_x = 0
-        self.correc_y = 0
 
-        self.subscription_gyro = self.create_subscription(Float32MultiArray, 'kalman_angles', self.adapt_callback, 10)
         self.joint_map = {
             'front_left_shoulder': 13,
             'front_right_shoulder': 12,
@@ -87,59 +81,53 @@ class ServoController(Node):
             'rear_left_foot': 5
         }
         self.factor_map = {
-            'front_left_shoulder': 1.0267,
-            'front_right_shoulder': 1.0,
-            'rear_left_shoulder': 1.133,
-            'rear_right_shoulder': 1.12,
-            'front_right_leg': 0.7153,
-            'front_left_leg': 1.8357,
-            'rear_right_leg': 0.7665,
-            'rear_left_leg': 1.8013,
-            'front_right_foot': 1.0721,
-            'front_left_foot': 0.3784,
-            'rear_right_foot': 1.0360,
+            'front_left_shoulder': 1.0067,
+            'front_right_shoulder': 1.0200,
+            'rear_left_shoulder': 1.1200,
+            'rear_right_shoulder': 1.1067,
+            'front_right_leg': 0.6655,
+            'front_left_leg': 1.9865,
+            'rear_right_leg': 0.6828,
+            'rear_left_leg': 1.8512,
+            'front_right_foot': 1.0180,
+            'front_left_foot': 0.4009,
+            'rear_right_foot': 0.9595,
             'rear_left_foot': 0.3784
         }
 
+    def duty_cycle_to_pulse(self,duty_cycle, pwm_freq=50):
+        """
+        Convert a duty cycle percentage to pulse width (µs) and PCA9685 pulse value.
+        
+        :param duty_cycle: Duty cycle percentage (0 to 100%).
+        :param pwm_freq: PWM frequency in Hz (default is 50 Hz).
+        :return: (pulse_width_us, pulse_value) tuple.
+        """
+        # Calculate the PWM period in microseconds
+        pwm_period_us = 1_000_000 / pwm_freq  # Period = 1 / frequency, converted to µs
+        
+        # Calculate pulse width in microseconds
+        pulse_width_us = (duty_cycle / 100) * pwm_period_us
+        
+        # Convert pulse width to PCA9685 pulse value (out of 4096)
+        pulse_value = int((pulse_width_us * 4096) / pwm_period_us)
+        
+        return pulse_value
+
     def joint_trajectory_callback(self, msg):
-        for i, joint_name in enumerate(msg.joint_names):
-            if (joint_name in self.joint_map):
-                position_radians = msg.points[0].positions[i]
-                position_degrees = position_radians * (180 / math.pi)  # Convert radians to degrees
-                factor = self.factor_map[joint_name]
-                pulse = factor*(1500 + (position_degrees * 500 / 90)) # Map degrees to pulse width
-                if joint_name == 'front_right_foot':
-                    if self.gyro_x < -4:
-                        self.correc_x += 5
-                    if self.gyro_x > 4:
-                        self.correc_x -+ 5
-                    pulse += self.correc_x
-                if joint_name == 'front_left_foot':
-                    if self.gyro_x < -4:
-                        self.correc_x += 5
-                    if self.gyro_x > 4:
-                        self.correc_x -+ 5
-                    pulse += self.correc_x
-                if joint_name == 'rear_right_foot':
-                    if self.gyro_x < -4:
-                        self.correc_x += 5
-                    if self.gyro_x > 4:
-                        self.correc_x -+ 5
-                    pulse += self.correc_x
-                if joint_name == 'rear_left_foot':
-                    if self.gyro_x < -4:
-                        self.correc_x += 5
-                    if self.gyro_x > 4:
-                        self.correc_x -+ 5
-                    pulse += self.correc_x
-                pulse_rounded = round(pulse)
-                self.pwm.setServoPulse(self.joint_map[joint_name], pulse_rounded)
-    
+        try:
+            for i, joint_name in enumerate(msg.joint_names):
+                if joint_name in self.joint_map:
+                    position_radians = msg.points[0].positions[i]
+                    position_degrees = position_radians * (180 / math.pi)  # Convert radians to degrees
+                    dutycycle = position_degrees/18 + 3
+                    pulse = self.duty_cycle_to_pulse(dutycycle)
+                    pulse_rounded = round(pulse)
+                    self.pwm.setServoPulse(self.joint_map[joint_name], pulse_rounded)
+        except Exception as e:
+            self.get_logger().error(f"Error in joint_trajectory_callback for {joint_name}: {position_degrees}.deg {pulse_rounded}.us: {str(e)}")
 
 
-    def adapt_callback(self, msg):
-        self.gyro_x = msg.data[0]
-        self.gyro_y = msg.data[1]
 
 def main(args=None):
     rclpy.init(args=args)
