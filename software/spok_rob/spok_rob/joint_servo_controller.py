@@ -107,7 +107,7 @@ class ServoController(Node):
                     pulse_rounded = round(pulse)
                     self.pwm.setServoPulse(self.joint_map[joint_name], pulse_rounded)
         except Exception as e:
-            self.get_logger().error(f"Error in joint_trajectory_callback: {str(e)}")
+            self.get_logger().error(f"Error in joint_trajectory_callback for {joint_name}: {position_degrees}.deg {pulse_rounded}.us: {str(e)}")
 
 
 
