@@ -23,6 +23,7 @@ setup(
             'joint_servo_controller_node = spok_rob.joint_servo_controller:main',
             'gyro_node = spok_rob.gyro_node:main',
             'move_node = spok_rob.move_node:main',
+            'collect_data = spok_rob.collect_data:main',
 
         ],
     },

@@ -4,7 +4,6 @@ import smbus
 import rclpy
 from rclpy.node import Node
 from trajectory_msgs.msg import JointTrajectory
-from std_msgs.msg import Float32MultiArray
 
 class PCA9685:
     __SUBADR1 = 0x02
@@ -57,13 +56,14 @@ class PCA9685:
 class ServoController(Node):
     def __init__(self):
         super().__init__('servo_controller')
+        self.pwm = PCA9685()
+        self.pwm.setPWMFreq(50)
         self.subscription = self.create_subscription(
             JointTrajectory,
             '/joint_group_effort_controller/joint_trajectory',
             self.joint_trajectory_callback,
             10
         )
-
         self.joint_map = {
             'front_left_shoulder': 13,
             'front_right_shoulder': 12,
@@ -79,54 +79,31 @@ class ServoController(Node):
             'rear_left_foot': 5
         }
         self.factor_map = {
-            'front_left_shoulder': 1.0067,
-            'front_right_shoulder': 1.0200,
-            'rear_left_shoulder': 1.1200,
-            'rear_right_shoulder': 1.1067,
-            'front_right_leg': 0.6655,
-            'front_left_leg': 1.9865,
-            'rear_right_leg': 0.6828,
-            'rear_left_leg': 1.8512,
-            'front_right_foot': 1.0180,
-            'front_left_foot': 0.4009,
-            'rear_right_foot': 0.9595,
-            'rear_left_foot': 0.3784
+            'front_left_shoulder': 1510,
+            'front_right_shoulder': 1570,
+            'rear_left_shoulder': 1630,
+            'rear_right_shoulder': 1570,
+            'front_right_leg': 620/-1.235984206199646,
+            'front_left_leg': 2490 / -1.235984206199646,
+            'rear_right_leg': 710 / -1.235984206199646,
+            'rear_left_leg': 2290 / -1.235984206199646,
+            'front_right_foot': 2730 / 2.512333393096924,
+            'front_left_foot': 410 / 2.512333393096924,
+            'rear_right_foot': 2540 / 2.512333393096924,
+            'rear_left_foot': 460 / 2.512333393096924
         }
 
-    def duty_cycle_to_pulse(self, duty_cycle):
-        pwm_period_us = 20000
-        pulse_width_us = (duty_cycle / 100) * pwm_period_us
-        pulse_value = int((pulse_width_us * 4096) / pwm_period_us)
-        return pulse_value
-
     def joint_trajectory_callback(self, msg):
-        left_joints = []
-        right_joints = []
-        try:
-            for i, joint_name in enumerate(msg.joint_names):
-                if joint_name in self.joint_map:
-                    position_radians = msg.points[0].positions[i]
-                    position_degrees = position_radians * (180 / math.pi)  # Convert radians to degrees
-                    factor = self.factor_map[joint_name]
-                    pulse_2 = factor*(1500 + (position_degrees * 500 / 90)) # Map degrees to pulse width
-
-                    dutycycle = position_degrees/18 + 3
-                    pulse = self.duty_cycle_to_pulse(dutycycle)
-                    pulse_rounded = round(pulse)
-                    pulse_rounded_2 = round(pulse_2)
-
-                    if "left" in joint_name:
-                        left_joints.append(f"{joint_name}==[{pulse_rounded_2}]")
-                    elif "right" in joint_name:
-                        right_joints.append(f"{joint_name}==[{pulse_rounded_2}]")
-
-            print("\n".join(left_joints))
-            print("-------------")
-            print("\n".join(right_joints))
-            print("-------------")
-        except Exception as e:
-            self.get_logger().error(f"Error in joint_trajectory_callback: {str(e)}")
-
+        for i, joint_name in enumerate(msg.joint_names):
+            if joint_name in self.joint_map:
+                position_radians = msg.points[0].positions[i]
+                factor = self.factor_map[joint_name]
+                if 'shoulder' in joint_name:
+                    pulse = factor + position_radians * factor
+                else:
+                    pulse = position_radians * factor
+                pulse_rounded = round(pulse)
+                self.pwm.setServoPulse(self.joint_map[joint_name], pulse_rounded)
 
 def main(args=None):
     rclpy.init(args=args)
