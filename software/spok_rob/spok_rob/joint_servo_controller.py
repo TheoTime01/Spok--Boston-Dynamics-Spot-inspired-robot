@@ -58,7 +58,7 @@ class ServoController(Node):
     def __init__(self):
         super().__init__('servo_controller')
         self.pwm = PCA9685()
-        self.pwm.setPWMFreq(50)
+        self.pwm.setPWMFreq(20)
         self.subscription = self.create_subscription(
             JointTrajectory,
             '/joint_group_effort_controller/joint_trajectory',
