@@ -35,7 +35,8 @@ setup(
         'virtual_joy_stick = quadruped_robot.virtual_joy_stick:main',
         'joystick_controller = quadruped_robot.joystick_controller:main',
         'camera_sonar_view_node = quadruped_robot.camera_sonar_view:main',
-        'manual_motion_node = quadruped_robot.manual_motion:main'
+        'manual_motion_node = quadruped_robot.manual_motion:main',
+        'tkinter_node = quadruped_robot.tkinter_node:main'
         ]
     },
 )
