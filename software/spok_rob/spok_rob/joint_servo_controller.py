@@ -78,6 +78,22 @@ class ServoController(Node):
             'rear_right_foot': 4,
             'rear_left_foot': 5
         }
+
+        self.start_map = {
+            'front_left_shoulder': 1510,
+            'front_right_shoulder': 1570,
+            'rear_left_shoulder': 1630,
+            'rear_right_shoulder': 1570,
+            'front_right_leg': 620,
+            'front_left_leg': 2490,
+            'rear_right_leg': 710,
+            'rear_left_leg': 2290,
+            'front_right_foot': 2730,
+            'front_left_foot': 410,
+            'rear_right_foot': 2540,
+            'rear_left_foot': 460
+        }
+
         self.factor_map = {
             'front_left_shoulder': 1510,
             'front_right_shoulder': 1570,
@@ -105,9 +121,19 @@ class ServoController(Node):
                 pulse_rounded = round(pulse)
                 self.pwm.setServoPulse(self.joint_map[joint_name], pulse_rounded)
 
+
+    def start(self, msg):
+        self.get_logger().info(f"Start !")
+        for i, joint_name in enumerate(msg.joint_names):
+            if joint_name in self.start_map:
+                pulse = self.start_map[joint_name]
+                self.pwm.setServoPulse(self.joint_map[joint_name], pulse)
+        self.get_logger().info(f"Start end...")
+
 def main(args=None):
     rclpy.init(args=args)
     servo_controller = ServoController()
+    servo_controller.start()
     rclpy.spin(servo_controller)
     servo_controller.destroy_node()
     rclpy.shutdown()
