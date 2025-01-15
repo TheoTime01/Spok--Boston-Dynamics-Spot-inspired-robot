@@ -109,31 +109,15 @@ class ServoController(Node):
                 factor = self.factor_map[joint_name]
                 pulse = factor*(1500 + (position_degrees * 500 / 90)) # Map degrees to pulse width
                 if joint_name == 'front_right_foot':
-                    if self.gyro_x < -4:
-                        self.correc_x += 5
-                    if self.gyro_x > 4:
-                        self.correc_x -+ 5
-                    pulse += self.correc_x
+                    pulse = (1500 + (position_degrees * 500 / 90))
                 if joint_name == 'front_left_foot':
-                    if self.gyro_x < -4:
-                        self.correc_x += 5
-                    if self.gyro_x > 4:
-                        self.correc_x -+ 5
-                    pulse += self.correc_x
+                    pulse = (1500 + (position_degrees * 500 / 90))
                 if joint_name == 'rear_right_foot':
-                    if self.gyro_x < -4:
-                        self.correc_x += 5
-                    if self.gyro_x > 4:
-                        self.correc_x -+ 5
-                    pulse += self.correc_x
+                    pulse = (1500 + (position_degrees * 500 / 90))
                 if joint_name == 'rear_left_foot':
-                    if self.gyro_x < -4:
-                        self.correc_x += 5
-                    if self.gyro_x > 4:
-                        self.correc_x -+ 5
-                    pulse += self.correc_x
-                pulse_rounded = round(pulse)
-                self.pwm.setServoPulse(self.joint_map[joint_name], pulse_rounded)
+                    pulse = (1500 + (position_degrees * 500 / 90))
+                #pulse_rounded = round(pulse)
+                self.pwm.setServoPulse(self.joint_map[joint_name], pulse)
     
 
 
