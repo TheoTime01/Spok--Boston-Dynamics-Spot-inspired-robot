@@ -20,7 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'joint_servo_controller_node = spok_rob.joint_servo_controller_basic:main',
+            'joint_servo_controller_node = spok_rob.joint_servo_controller:main',
             'gyro_node = spok_rob.gyro_node:main',
             'move_node = spok_rob.move_node:main',
             'camera_node = spok_rob.camera_node:main',

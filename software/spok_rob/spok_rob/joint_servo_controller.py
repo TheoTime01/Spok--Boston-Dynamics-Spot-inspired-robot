@@ -4,7 +4,6 @@ import smbus
 import rclpy
 from rclpy.node import Node
 from trajectory_msgs.msg import JointTrajectory
-from std_msgs.msg import Float32MultiArray
 
 class PCA9685:
     __SUBADR1 = 0x02
@@ -65,13 +64,6 @@ class ServoController(Node):
             self.joint_trajectory_callback,
             10
         )
-        self.gyro_x = 0
-        self.gyro_y = 0
-        
-        self.correc_x = 0
-        self.correc_y = 0
-
-        self.subscription_gyro = self.create_subscription(Float32MultiArray, 'kalman_angles', self.adapt_callback, 10)
         self.joint_map = {
             'front_left_shoulder': 13,
             'front_right_shoulder': 12,
@@ -87,43 +79,31 @@ class ServoController(Node):
             'rear_left_foot': 5
         }
         self.factor_map = {
-            'front_left_shoulder': 1.0267,
-            'front_right_shoulder': 1.0,
-            'rear_left_shoulder': 1.033,
-            'rear_right_shoulder': 1.12,
-            'front_right_leg': 0.7153,
-            'front_left_leg': 1.9357,
-            'rear_right_leg': 0.6665,
-            'rear_left_leg': 1.8013,
-            'front_right_foot': 1.0721,
-            'front_left_foot': 0.3784,
-            'rear_right_foot': 1.0360,
-            'rear_left_foot': 0.3784
+            'front_left_shoulder': 1510,
+            'front_right_shoulder': 1570,
+            'rear_left_shoulder': 1630,
+            'rear_right_shoulder': 1570,
+            'front_right_leg': 620/-1.235984206199646,
+            'front_left_leg': 2490 / -1.235984206199646,
+            'rear_right_leg': 710 / -1.235984206199646,
+            'rear_left_leg': 2290 / -1.235984206199646,
+            'front_right_foot': 2730 / 2.512333393096924,
+            'front_left_foot': 410 / 2.512333393096924,
+            'rear_right_foot': 2540 / 2.512333393096924,
+            'rear_left_foot': 460 / 2.512333393096924
         }
 
     def joint_trajectory_callback(self, msg):
         for i, joint_name in enumerate(msg.joint_names):
-            if (joint_name in self.joint_map):
+            if joint_name in self.joint_map:
                 position_radians = msg.points[0].positions[i]
-                position_degrees = position_radians * (180 / math.pi)  # Convert radians to degrees
                 factor = self.factor_map[joint_name]
-                pulse = factor*(1500 + (position_degrees * 500 / 90)) # Map degrees to pulse width
-                if joint_name == 'front_right_foot':
-                    pulse = (1500 + (position_degrees * 500 / 90))
-                if joint_name == 'front_left_foot':
-                    pulse = (1500 + (position_degrees * 500 / 90))
-                if joint_name == 'rear_right_foot':
-                    pulse = (1500 + (position_degrees * 500 / 90))
-                if joint_name == 'rear_left_foot':
-                    pulse = (1500 + (position_degrees * 500 / 90))
-                #pulse_rounded = round(pulse)
-                self.pwm.setServoPulse(self.joint_map[joint_name], pulse)
-    
-
-
-    def adapt_callback(self, msg):
-        self.gyro_x = msg.data[0]
-        self.gyro_y = msg.data[1]
+                if 'shoulder' in joint_name:
+                    pulse = factor + position_radians * factor
+                else:
+                    pulse = position_radians * factor
+                pulse_rounded = round(pulse)
+                self.pwm.setServoPulse(self.joint_map[joint_name], pulse_rounded)
 
 def main(args=None):
     rclpy.init(args=args)
