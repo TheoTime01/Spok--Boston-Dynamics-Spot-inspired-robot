@@ -29,7 +29,7 @@ class JoyTeleopNode(Node):
         self.declare_parameter("gait/swing_height", 0.0)
         self.declare_parameter("gait/nominal_height", 0.0)
         self.declare_parameter("speed", 0.2)
-        self.declare_parameter("turn", 1.0)
+        self.declare_parameter("turn", 0.4)
         
         self.swing_height = self.get_parameter("gait/swing_height").value
         self.nominal_height = self.get_parameter("gait/nominal_height").value
