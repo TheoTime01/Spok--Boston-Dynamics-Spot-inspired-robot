@@ -31,6 +31,14 @@ class SpeechRecognition(Node):
                             msg.data = "stand up"
                             self.publisher_.publish(msg)
                             print("stand up detected")
+                        if "sit down" in text.lower():
+                            msg.data = "sit down"
+                            self.publisher_.publish(msg)
+                            print("sit down detected")
+                        if "lay down" in text.lower():
+                            msg.data = "lay down"
+                            self.publisher_.publish(msg)
+                            print("lay down detected")
 
                     except sr.UnknownValueError:
                         print("could not understand")

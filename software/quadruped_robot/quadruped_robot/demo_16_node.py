@@ -1,6 +1,7 @@
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import Image
+from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 from cv_bridge import CvBridge
 import cv2
 
@@ -19,21 +20,43 @@ class DemoNode(Node):
 
         self.state = 0 #0: couché, 1: assis, 2: debout
 
+        self.msg_servo = JointTrajectory()
+        self.msg_servo.joint_names = ['front_left_shoulder', 'front_right_shoulder', 'rear_left_shoulder', 'rear_right_shoulder', 'front_right_leg', 'front_left_leg', 'rear_right_leg', 'rear_left_leg', 'front_right_foot', 'front_left_foot', 'rear_right_foot', 'rear_left_foot']
 
+        self.publisher = self.create_publisher(JointTrajectory, '/joint_group_effort_controller/joint_trajectory', 10)
 
-        #self.subscription = self.create_subscription(Empty,'land',self.land_callback,10)
+        #init assis
+        self.point = JointTrajectoryPoint()
+        self.point.positions = [1.5893254712295857e-08, 1.5893254712295857e-08, 1.5893254712295857e-08, 1.5893254712295857e-08, -1.235984206199646, -1.235984206199646, -1.235984206199646, -1.235984206199646, 2.512333393096924, 2.512333393096924, 2.512333393096924, 2.512333393096924]
+        self.msg_servo.points = self.point
+        self.publisher.publish(self.msg_servo)
 
 
     def STT_callback(self, msg):
         print(self.msg.data)
+
+        
         if self.msg.data == "stand up":
             self.state = 2
+            self.point = JointTrajectoryPoint()
+            self.point.positions = [1.5893254712295857e-08, 1.5893254712295857e-08, 1.5893254712295857e-08, 1.5893254712295857e-08, -1.235984206199646, -1.235984206199646, -1.235984206199646, -1.235984206199646, 2.512333393096924, 2.512333393096924, 2.512333393096924, 2.512333393096924]
+            self.msg_servo.points = self.point
+            self.publisher.publish(self.msg_servo)
 
         if self.msg.data == "sit down":
             self.state = 1
-            
+            self.point = JointTrajectoryPoint()
+            self.point.positions = [1.5893254712295857e-08, 1.5893254712295857e-08, 1.5893254712295857e-08, 1.5893254712295857e-08, -1.235984206199646, -1.235984206199646, -1.235984206199646, -1.235984206199646, 2.512333393096924, 2.512333393096924, 2.512333393096924, 2.512333393096924]
+            self.msg_servo.points = self.point
+            self.publisher.publish(self.msg_servo)
+
         if self.msg.data == "lay down":
             self.state = 0
+            self.point = JointTrajectoryPoint()
+            self.point.positions = [1.5893254712295857e-08, 1.5893254712295857e-08, 1.5893254712295857e-08, 1.5893254712295857e-08, -1.235984206199646, -1.235984206199646, -1.235984206199646, -1.235984206199646, 2.512333393096924, 2.512333393096924, 2.512333393096924, 2.512333393096924]
+            self.msg_servo.points = self.point
+            self.publisher.publish(self.msg_servo)
+
 
 
 
