@@ -122,12 +122,11 @@ class ServoController(Node):
                 self.pwm.setServoPulse(self.joint_map[joint_name], pulse_rounded)
 
 
-    def start(self, msg):
+    def start(self):
         self.get_logger().info(f"Start !")
-        for i, joint_name in enumerate(msg.joint_names):
-            if joint_name in self.start_map:
-                pulse = self.start_map[joint_name]
-                self.pwm.setServoPulse(self.joint_map[joint_name], pulse)
+        for joint_name in self.start_map:
+            pulse = self.start_map[joint_name]
+            self.pwm.setServoPulse(self.joint_map[joint_name], pulse)
         self.get_logger().info(f"Start end...")
 
 def main(args=None):
