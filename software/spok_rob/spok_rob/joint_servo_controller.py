@@ -169,8 +169,8 @@ class ServoController(Node):
                     pulse = self.components[joint_name] + position_radians * self.components[joint_name]
                 else:
                     pulse = self.calculate_pulse(joint_name, position_radians)
-                    pulse_rounded = round(pulse)
-                self.pwm.setServoPulse(self.joint_map[joint_name], pulse_rounded)
+                    pulse = round(pulse)
+                self.pwm.setServoPulse(self.joint_map[joint_name], pulse)
 
 def main(args=None):
     rclpy.init(args=args)
