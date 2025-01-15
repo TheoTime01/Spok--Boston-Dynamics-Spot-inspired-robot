@@ -37,7 +37,8 @@ setup(
         'camera_sonar_view_node = quadruped_robot.camera_sonar_view:main',
         'manual_motion_node = quadruped_robot.manual_motion:main',
         'tkinter_node = quadruped_robot.tkinter_node:main',
-        'camera_process_node = quadruped_robot.camera_process_node:main'
+        'camera_process_node = quadruped_robot.camera_process_node:main',
+        'demo_16_node = quadruped_robot.demo_16_node:main',
         ]
     },
 )
