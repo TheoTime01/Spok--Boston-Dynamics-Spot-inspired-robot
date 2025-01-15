@@ -5,6 +5,8 @@ import rclpy
 from rclpy.node import Node
 from trajectory_msgs.msg import JointTrajectory
 
+
+
 class PCA9685:
     __SUBADR1 = 0x02
     __SUBADR2 = 0x03
@@ -64,19 +66,17 @@ class ServoController(Node):
             self.joint_trajectory_callback,
             10
         )
+
+        # Joint mapping with the same key structure
         self.joint_map = {
-            'front_left_shoulder': 13,
-            'front_right_shoulder': 12,
-            'rear_left_shoulder': 2,
-            'rear_right_shoulder': 3,
-            'front_right_leg': 15,
-            'front_left_leg': 14,
-            'rear_right_leg': 0,
-            'rear_left_leg': 1,
-            'front_right_foot': 11,
-            'front_left_foot': 10,
-            'rear_right_foot': 4,
-            'rear_left_foot': 5
+            'front_left_leg': 13,
+            'front_right_leg': 12,
+            'rear_left_leg': 2,
+            'rear_right_leg': 3,
+            'front_right_foot': 15,
+            'front_left_foot': 14,
+            'rear_right_foot': 0,
+            'rear_left_foot': 1,
         }
 
         self.start_map = {
@@ -94,40 +94,85 @@ class ServoController(Node):
             'rear_left_foot': 460
         }
 
-        self.factor_map = {
+        # Components dictionary with appropriate structure
+        self.components = {
             'front_left_shoulder': 1510,
             'front_right_shoulder': 1570,
             'rear_left_shoulder': 1630,
             'rear_right_shoulder': 1570,
-            'front_right_leg': 620/-1.235984206199646,
-            'front_left_leg': 2490 / -1.235984206199646,
-            'rear_right_leg': 710 / -1.235984206199646,
-            'rear_left_leg': 2290 / -1.235984206199646,
-            'front_right_foot': 2730 / 2.512333393096924,
-            'front_left_foot': 410 / 2.512333393096924,
-            'rear_right_foot': 2540 / 2.512333393096924,
-            'rear_left_foot': 460 / 2.512333393096924
+            "front_left_leg": {
+                "max": [2360, -0.9355980157852173],
+                "min": [2490, -1.235984206199646],
+            },
+            "front_right_leg": {
+                "max": [790, -0.9355980157852173],
+                "min": [620, -1.235984206199646],
+            },
+            "rear_left_leg": {
+                "max": [2200, -0.9355980157852173],
+                "min": [2290, -1.235984206199646],
+            },
+            "rear_right_leg": {
+                "max": [810, -0.9355980157852173],
+                "min": [710, -1.235984206199646],
+            },
+            "front_left_foot": {
+                "max": [890, 1.8437325954437256],
+                "min": [410, 2.512333393096924],
+            },
+            "front_right_foot": {
+                "max": [2260, 1.8437325954437256],
+                "min": [2730, 2.512333393096924],
+            },
+            "rear_left_foot": {
+                "max": [840, 1.8437325954437256],
+                "min": [460, 2.512333393096924],
+            },
+            "rear_right_foot": {
+                "max": [2130, 1.8437325954437256],
+                "min": [2540, 2.512333393096924],
+            },
         }
+
+    def calculate_pulse(self, component, angle):
+        """
+        Calculate the pulse width for the given component and angle.
+        :param component: str, Component name (e.g., 'front_left_leg')
+        :param angle: float, Desired angle in radians
+        :return: float, Calculated pulse width
+        """
+        if component not in self.components:
+            raise ValueError(f"Invalid component: {component}")
+        
+        data = self.components[component]
+        pulse_min, angle_min = data["min"]
+        pulse_max, angle_max = data["max"]
+        
+        # Calculate the slope and intercept for pulse based on angle
+        slope = (pulse_max - pulse_min) / (angle_max - angle_min)
+        intercept = pulse_min - slope * angle_min
+        
+        # Calculate pulse for the given angle
+        pulse = slope * angle + intercept
+        return pulse
 
     def joint_trajectory_callback(self, msg):
         for i, joint_name in enumerate(msg.joint_names):
             if joint_name in self.joint_map:
                 position_radians = msg.points[0].positions[i]
-                factor = self.factor_map[joint_name]
                 if 'shoulder' in joint_name:
-                    pulse = factor + position_radians * factor
+                    pulse = self.components[joint_name] + position_radians * self.components[joint_name]
                 else:
-                    pulse = position_radians * factor
-                pulse_rounded = round(pulse)
+                    pulse = self.calculate_pulse(joint_name, position_radians)
+                    pulse_rounded = round(pulse)
                 self.pwm.setServoPulse(self.joint_map[joint_name], pulse_rounded)
 
-
     def start(self):
-        self.get_logger().info(f"Start !")
+        self.get_logger().info(f"Starting servo positions...")
         for joint_name in self.start_map:
             pulse = self.start_map[joint_name]
             self.pwm.setServoPulse(self.joint_map[joint_name], pulse)
-        self.get_logger().info(f"Start end...")
+        self.get_logger().info(f"Starting servo positions done.")
 
 def main(args=None):
     rclpy.init(args=args)
