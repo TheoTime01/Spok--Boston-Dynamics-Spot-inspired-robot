@@ -69,15 +69,20 @@ class ServoController(Node):
 
         # Joint mapping with the same key structure
         self.joint_map = {
-            'front_left_leg': 13,
-            'front_right_leg': 12,
-            'rear_left_leg': 2,
-            'rear_right_leg': 3,
-            'front_right_foot': 15,
-            'front_left_foot': 14,
-            'rear_right_foot': 0,
-            'rear_left_foot': 1,
+            'front_left_shoulder': 13,
+            'front_right_shoulder': 12,
+            'rear_left_shoulder': 2,
+            'rear_right_shoulder': 3,
+            'front_right_leg': 15,
+            'front_left_leg': 14,
+            'rear_right_leg': 0,
+            'rear_left_leg': 1,
+            'front_right_foot': 11,
+            'front_left_foot': 10,
+            'rear_right_foot': 4,
+            'rear_left_foot': 5
         }
+
 
         self.start_map = {
             'front_left_shoulder': 1510,
@@ -167,17 +172,9 @@ class ServoController(Node):
                     pulse_rounded = round(pulse)
                 self.pwm.setServoPulse(self.joint_map[joint_name], pulse_rounded)
 
-    def start(self):
-        self.get_logger().info(f"Starting servo positions...")
-        for joint_name in self.start_map:
-            pulse = self.start_map[joint_name]
-            self.pwm.setServoPulse(self.joint_map[joint_name], pulse)
-        self.get_logger().info(f"Starting servo positions done.")
-
 def main(args=None):
     rclpy.init(args=args)
     servo_controller = ServoController()
-    servo_controller.start()
     rclpy.spin(servo_controller)
     servo_controller.destroy_node()
     rclpy.shutdown()
