@@ -9,19 +9,9 @@ class WebcamPublisher(Node):
         super().__init__('webcam_publisher')
         self.publisher_ = self.create_publisher(Image, 'video_frames', 10)
         self.timer = self.create_timer(0.1, self.timer_callback)
-
-        max_cameras = 10
-        available = []
-        for i in range(max_cameras):
-            cap = cv2.VideoCapture(i, cv2.CAP_DSHOW)
-            if not cap.read()[0]:
-                continue
-            available.append(i)
-            cap.release()
-        print(f"Cameras found: {available}")
-
-        self.cap = cv2.VideoCapture(available[0])
+        self.cap = cv2.VideoCapture(0)
         self.bridge = CvBridge()
+        
 
     def timer_callback(self):
         ret, frame = self.cap.read()
