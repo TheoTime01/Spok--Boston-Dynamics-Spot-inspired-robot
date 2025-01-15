@@ -9,7 +9,7 @@ class WebcamPublisher(Node):
         super().__init__('webcam_publisher')
         self.publisher_ = self.create_publisher(Image, 'video_frames', 10)
         self.timer = self.create_timer(0.1, self.timer_callback)  # Fréquence : 10 Hz
-        self.cap = cv2.VideoCapture(0)  # Indice 0 pour la première webcam
+        self.cap = cv2.VideoCapture(1)  # Indice 0 pour la première webcam
         self.bridge = CvBridge()
 
     def timer_callback(self):
