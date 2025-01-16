@@ -25,6 +25,7 @@ setup(
             'move_node = spok_rob.move_node:main',
             'camera_node = spok_rob.camera_node:main',
             'word_detect_node = spok_rob.word_detect_node:main',
+            'autonomous_movement_node = spok_rob.autonomous_movement:main',
 
         ],
     },
