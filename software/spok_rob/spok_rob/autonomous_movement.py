@@ -5,6 +5,7 @@ from rclpy.node import Node
 from geometry_msgs.msg import Twist, Pose
 from nav_msgs.msg import Odometry
 from champ_msgs.msg import Pose as PoseLite
+from sensor_msgs.msg import Range
 from tf_transformations import quaternion_from_euler, euler_from_quaternion
 import math
 
@@ -15,6 +16,9 @@ class AutonomousMovement(Node):
 
         # Subscriptions
         self.create_subscription(Odometry, '/odom', self.odom_callback, 10)
+        self.create_subscription(Range, '/sonar_1', self.sonar_1_callback, 10)
+        self.create_subscription(Range, '/sonar_2', self.sonar_2_callback, 10)
+
 
         # Publishers
         self.cmd_vel_publisher = self.create_publisher(Twist, '/cmd_vel', 10)
@@ -28,6 +32,10 @@ class AutonomousMovement(Node):
         self.linear_speed = 0.2
         self.angular_speed = 0.5
 
+        # Initialize variables to store the range data
+        self.sonar_1_range = None
+        self.sonar_2_range = None
+
     def odom_callback(self, msg):
         # Update position
         self.position['x'] = msg.pose.pose.position.x
@@ -36,6 +44,35 @@ class AutonomousMovement(Node):
         # Update orientation (yaw) from odometry quaternion
         q = msg.pose.pose.orientation
         _, _, self.orientation = euler_from_quaternion([q.x, q.y, q.z, q.w])
+
+    def sonar_1_callback(self, msg):
+        self.sonar_1_range = msg.range
+        self.compute_average()
+
+    def sonar_2_callback(self, msg):
+        self.sonar_2_range = msg.range
+        self.compute_average()
+
+    def compute_average(self):
+        if self.sonar_1_range is not None and self.sonar_2_range is not None:
+            self.avg_distance = (self.sonar_1_range + self.sonar_2_range) / 2.0
+            if self.avg_distance < 3.0:
+                self.get_logger().info(f"Obstacle detected! Average distance: {self.avg_distance} meters")
+                self.stop()
+        else:
+            self.avg_distance = None
+
+    def stop(self):
+        twist = Twist()
+        twist.linear.x = 0.0
+        twist.linear.y = 0.0
+        twist.linear.z = 0.0
+        twist.angular.x = 0.0
+        twist.angular.y = 0.0
+        twist.angular.z = 0.0
+        self.cmd_vel_publisher.publish(twist)
+        self.get_logger().info("Robot stopped due to obstacle.")
+
 
     def compute_control(self):
         # Compute control signals
