@@ -156,8 +156,5 @@ def generate_launch_description():
             declare_world_init_heading,
             bringup_ld,
             gazebo_ld,
-            joy,
-            joy_controller,
-
         ]
     )

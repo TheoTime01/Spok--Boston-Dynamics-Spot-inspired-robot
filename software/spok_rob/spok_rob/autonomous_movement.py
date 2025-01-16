@@ -4,9 +4,8 @@ import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist, Pose
 from nav_msgs.msg import Odometry
-from sensor_msgs.msg import Imu
 from champ_msgs.msg import Pose as PoseLite
-from tf_transformations import quaternion_from_euler
+from tf_transformations import quaternion_from_euler, euler_from_quaternion
 import math
 
 
@@ -16,7 +15,6 @@ class AutonomousMovement(Node):
 
         # Subscriptions
         self.create_subscription(Odometry, '/odom', self.odom_callback, 10)
-        self.create_subscription(Imu, '/imu/data', self.imu_callback, 10)
 
         # Publishers
         self.cmd_vel_publisher = self.create_publisher(Twist, '/cmd_vel', 10)
@@ -26,20 +24,18 @@ class AutonomousMovement(Node):
         # Robot state
         self.position = {'x': 0.0, 'y': 0.0}
         self.orientation = 0.0
-        self.target = {'x': 10.0, 'y': 10.0}  # Example target
+        self.target = {'x': 2.0, 'y': 2.0}  # Example target
         self.linear_speed = 0.2
         self.angular_speed = 0.5
 
     def odom_callback(self, msg):
+        # Update position
         self.position['x'] = msg.pose.pose.position.x
         self.position['y'] = msg.pose.pose.position.y
 
-    def imu_callback(self, msg):
-        # Extract yaw from the IMU quaternion
-        q = msg.orientation
-        siny_cosp = 2.0 * (q.w * q.z + q.x * q.y)
-        cosy_cosp = 1.0 - 2.0 * (q.y**2 + q.z**2)
-        self.orientation = math.atan2(siny_cosp, cosy_cosp)
+        # Update orientation (yaw) from odometry quaternion
+        q = msg.pose.pose.orientation
+        _, _, self.orientation = euler_from_quaternion([q.x, q.y, q.z, q.w])
 
     def compute_control(self):
         # Compute control signals
@@ -50,35 +46,44 @@ class AutonomousMovement(Node):
         target_angle = math.atan2(dy, dx)
         angle_diff = target_angle - self.orientation
 
-        # Normalize angle
+        # Normalize angle to [-pi, pi]
         angle_diff = (angle_diff + math.pi) % (2 * math.pi) - math.pi
 
         twist = Twist()
 
         if distance > 0.1:
-            twist.linear.x = -self.linear_speed
+            # Move towards the target
+            twist.linear.x = self.linear_speed
+            twist.linear.y = 0.0
+            twist.linear.z = 0.0
+            twist.angular.x = 0.0
+            twist.angular.y = 0.0
             twist.angular.z = self.angular_speed * angle_diff
+            self.get_logger().info(f'distance={distance}/angle={angle_diff}')
         else:
+            # Stop when target is reached
             twist.linear.x = 0.0
+            twist.linear.y = 0.0
+            twist.linear.z = 0.0
+            twist.angular.x = 0.0
+            twist.angular.y = 0.0
             twist.angular.z = 0.0
             self.get_logger().info('Target reached!')
 
         return twist
 
     def publish_body_pose(self):
-        # Create and publish PoseLite message
+        # Publish minimal pose data to /body_pose/raw
         body_pose_lite = PoseLite()
-        body_pose_lite.x = self.position['x']
-        body_pose_lite.y = self.position['y']
+        body_pose_lite.x = 0.0
+        body_pose_lite.y = 0.0
         body_pose_lite.roll = 0.0
         body_pose_lite.pitch = 0.0
         body_pose_lite.yaw = self.orientation
         self.body_pose_lite_publisher.publish(body_pose_lite)
 
-        # Create and publish full Pose message
+        # Publish full pose data to /body_pose
         body_pose = Pose()
-        body_pose.position.x = self.position['x']
-        body_pose.position.y = self.position['y']
         body_pose.position.z = 0.0
 
         quaternion = quaternion_from_euler(0.0, 0.0, self.orientation)
@@ -91,7 +96,7 @@ class AutonomousMovement(Node):
     def move_to_target(self):
         twist = self.compute_control()
         self.cmd_vel_publisher.publish(twist)
-        self.publish_body_pose()
+
 
 
 def main(args=None):
