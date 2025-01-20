@@ -19,6 +19,8 @@ setup(
         (os.path.join('share', package_name, 'meshes'   ), glob('meshes/*')),
         (os.path.join('share', package_name, 'worlds'   ), glob('worlds/*')),
         (os.path.join('share', package_name, 'json'   ), glob('json/*')),
+        (os.path.join('share', package_name, 'rviz'), glob(os.path.join('rviz', '*'))),
+        (os.path.join('share', package_name, 'params'), glob(os.path.join('params', '*.yaml'))),
     ],
 
     install_requires=['setuptools'],
@@ -39,6 +41,7 @@ setup(
         'tkinter_node = quadruped_robot.tkinter_node:main',
         'camera_process_node = quadruped_robot.camera_process_node:main',
         'demo_16_node = quadruped_robot.demo_16_node:main',
+        'lidar_scan_republisher = quadruped_robot.lidar_scan_republisher:main'
         ]
     },
 )
