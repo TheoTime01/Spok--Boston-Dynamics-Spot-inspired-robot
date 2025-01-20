@@ -26,6 +26,7 @@ setup(
             'camera_node = spok_rob.camera_node:main',
             'word_detect_node = spok_rob.word_detect_node:main',
             'connection_node = spok_rob.connection_node:main',
+            'mpu6050_node = spok_rob.mpu6050_node:main',
 
         ],
     },
