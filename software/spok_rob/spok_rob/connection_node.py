@@ -13,7 +13,7 @@ class ConnectionNode(Node):
         self.hostname = "192.168.1.164"
 
         self.publisher_ = self.create_publisher(Bool, 'connection_state', 10)
-        self.publisher_pico = self.create_publisher(Int32, 'connection_pico', 10)
+        self.publisher_pico = self.create_publisher(Int32, 'pico_subscriber', 10)
 
         self.timer_ = self.create_timer(0.5, self.publish_connection)
 
