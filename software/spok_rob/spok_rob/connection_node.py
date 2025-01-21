@@ -10,7 +10,7 @@ class ConnectionNode(Node):
 
         self.connection_state = True
 
-        self.hostname = "192.168.1.164"
+        self.hostname = "192.168.1.221"
 
         self.publisher_ = self.create_publisher(Bool, 'connection_state', 10)
         self.publisher_pico = self.create_publisher(Int32, 'pico_subscriber', 10)
