@@ -5,7 +5,7 @@ def generate_launch_description():
     return LaunchDescription([
         Node(
             package='spok_rob',
-            executable='joint_servo_controller',
+            executable='joint_servo_controller_node',
             name='joint_servo_controller_node'
         ),
         Node(
