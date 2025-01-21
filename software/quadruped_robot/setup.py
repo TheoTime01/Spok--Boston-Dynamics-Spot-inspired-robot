@@ -43,6 +43,7 @@ setup(
         'demo_16_node = quadruped_robot.demo_16_node:main',
         'lidar_scan_republisher = quadruped_robot.lidar_scan_republisher:main',
         'face_detectiuon_node = quadruped_robot.face_detection_node:main',
+        'scenario = quadruped_robot.scenario:main',
         ]
     },
 )
