@@ -10,7 +10,7 @@ class ConnectionNode(Node):
 
         self.connction_state = True
 
-        self.hostname = "192.168.1.174"
+        self.hostname = "192.168.1.164"
 
         self.publisher_ = self.create_publisher(Bool, 'connection_state', 10)
         self.timer_ = self.create_timer(0.5, self.publish_connection)
