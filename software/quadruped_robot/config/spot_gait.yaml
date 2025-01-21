@@ -1,7 +1,7 @@
 /**:
   ros__parameters:
     gait:
-      knee_orientation : "<<"
+      knee_orientation : ">>"
       pantograph_leg : false
       odom_scaler: 0.9
       max_linear_velocity_x : 0.3
