@@ -38,7 +38,7 @@ def generate_launch_description():
 
         Node(
             package='usb_cam',
-            executable='usb_cam_node',
+            executable='usb_cam_node_exe',
             name='usb_cam_node',
             output='screen',
             parameters=[
