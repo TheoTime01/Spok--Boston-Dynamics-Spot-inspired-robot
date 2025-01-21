@@ -41,7 +41,7 @@ setup(
         'tkinter_node = quadruped_robot.tkinter_node:main',
         'camera_process_node = quadruped_robot.camera_process_node:main',
         'demo_16_node = quadruped_robot.demo_16_node:main',
-        'lidar_scan_republisher = quadruped_robot.lidar_scan_republisher:main'
+        'lidar_scan_republisher = quadruped_robot.lidar_scan_republisher:main',
         'face_detectiuon_node = quadruped_robot.face_detection_node:main',
         ]
     },

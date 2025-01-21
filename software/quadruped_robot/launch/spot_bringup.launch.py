@@ -37,7 +37,7 @@ def generate_launch_description():
     gait_config = os.path.join(curr_pkg, "config/spot_gait.yaml")
     links_config = os.path.join(curr_pkg, "config/spot_links.yaml")
     joints_config = os.path.join(curr_pkg, "config/spot_joints.yaml")
-    default_model_path = os.path.join(curr_pkg, "urdf/spot.urdf.xacro")
+    default_model_path = os.path.join(curr_pkg, "urdf/spot_without_lidar_imu.urdf.xacro")
 
     # Champ
     # gait_config = os.path.join(curr_pkg, "config/champ_gait.yaml")
