@@ -213,7 +213,6 @@ graph LR
     T1[Odometry source] -- /odom --> Node((Ros2_nav))
     T2[Laser source] -- /scan --> Node((Ros2_nav))
 
-    Node --  /cmd_vel -->D[/joint_group_effort_controller]
+    Node --  /cmd_vel -->D[joint_group_effort_controller]
 ```
-
 
