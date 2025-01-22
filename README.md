@@ -10,6 +10,13 @@ This project, inspired by Boston Dynamics' Spot robot, aims to develop a quadrup
 
 ![Spok](media/spok2.jpg)
 
+## Videos
+
+![Presentation](https://youtu.be/)
+
+![Tutorial](https://youtu.be/J5kNFhRe64M)
+
+
 ### Hardware
 
 Our robot is made up of 3D printed parts. Most of the 3D models can be found here: [Thingiverse Project](https://www.thingiverse.com/thing:3638679). Some parts have been recreated to fit to our electronics.
