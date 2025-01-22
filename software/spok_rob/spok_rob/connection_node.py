@@ -4,8 +4,6 @@ from std_msgs.msg import Bool, Int32
 import subprocess
 
 
-
-
 def is_device_connected(ip_address: str, timeout: int = 1) -> bool:
     try:
         result = subprocess.run(
@@ -18,7 +16,6 @@ def is_device_connected(ip_address: str, timeout: int = 1) -> bool:
     except Exception as e:
         print(f"Error pinging {ip_address}: {e}")
         return False
-
 
 class ConnectionNode(Node):
     def __init__(self):

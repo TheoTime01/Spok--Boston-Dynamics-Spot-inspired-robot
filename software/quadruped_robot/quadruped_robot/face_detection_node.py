@@ -22,40 +22,40 @@ class HeadDetectionNode(Node):
         # Initialize the OpenCV bridge
         self.bridge = CvBridge()
 
+        self.counter = 0
+
         # Load the Haar cascade for head detection
         self.head_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
-        self.get_logger().info("Head detection node started")
+        self.get_logger().info("Face detection node started")
 
     def image_callback(self, msg):
-        try:
-            # Convert the ROS Image message to an OpenCV image
-            frame = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
 
-            # Convert to grayscale for head detection
-            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        self.counter += 1
 
-            # Detect heads in the frame
-            heads = self.head_cascade.detectMultiScale(
-                gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30)
-            )
+        if self.counter%10 == 0:
+            try:
+                frame = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
 
-            # Draw rectangles around detected heads
-            for (x, y, w, h) in heads:
-                cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+                gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-            # Convert the modified OpenCV image back to a ROS Image message
-            output_msg = self.bridge.cv2_to_imgmsg(frame, encoding='bgr8')
+                heads = self.head_cascade.detectMultiScale(
+                    gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30)
+                )
 
-            # Publish the modified video frame
-            self.publisher_.publish(output_msg)
-        except Exception as e:
-            self.get_logger().error(f"Error processing image: {e}")
+                for (x, y, w, h) in heads:
+                    cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
+
+                output_msg = self.bridge.cv2_to_imgmsg(frame, encoding='bgr8')
+
+                self.publisher_.publish(output_msg)
+            except Exception as e:
+                self.get_logger().error(f"Error processing image: {e}")
+
 
 def main(args=None):
     rclpy.init(args=args)
     node = HeadDetectionNode()
-
     try:
         rclpy.spin(node)
     except KeyboardInterrupt:
