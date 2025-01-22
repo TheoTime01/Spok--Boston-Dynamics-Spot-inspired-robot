@@ -200,14 +200,8 @@ graph LR
     n6[Joy Node] -- /joy --> n1
     n4 -- /odom/raw --> n7[Footprint to Odom EKF]
     n4 -- /base_to_footprint_pose --> n8[Base to Footprint EKF]
-    n9[Joint States Controller] -- /joint_states --> n10[Oak State Publisher]
     n9 -- /joint_states --> n4
     n9 -- /joint_states --> n11[Robot State Publisher]
-    n12[Gazebo] -- /model_state --> n13[Gazebo ROS2 Control]
-    n14[RGB Stereo Node] -- /image --> n15[Camera Plugin]
-    n16[Transform Listener Impl] -- /transform --> n17[Controller Manager]
-    n18[Pico Node] -- /data --> n19[Sonar 1]
-    n19 -- /sonar_data --> n20[Sonar 2]
 
     classDef nodeStyle fill:#f9f,stroke:#333,stroke-width:2px;
     class n1,n2,n4,n9,n10,n11,n12,n14,n17,n18 nodeStyle;
