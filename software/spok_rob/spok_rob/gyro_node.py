@@ -97,7 +97,7 @@ class MPU6050Node(Node):
     def __init__(self):
         super().__init__('mpu6050_node')
 
-        self.publisher_ = self.create_publisher(Float32MultiArray, 'kalman_angles', 10)
+        self.publisher_ = self.create_publisher(Float32MultiArray, 'robot_orientation', 10)
         self.timer_ = self.create_timer(0.005, self.publish_angles)
 
         self.kalmanX = KalmanAngle()

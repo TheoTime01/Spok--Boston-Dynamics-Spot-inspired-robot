@@ -118,7 +118,7 @@ graph LR
 ```
 
 Whenever a _JointTrajectory_ message is received from the _/joint_group_effort_controller/joint_trajectory_ topic, the angles are translated into duty cycles, and sent to the Servo Driver HAT which generates a PWM signal for every motor.
-This node connects to the Servo Driver HAT through I2C, with the smbus Python librairy.
+This node connects to the Servo Driver HAT through I2C, with the _smbus_ Python librairy.
 
 
 ## mpu6050_node
@@ -129,12 +129,42 @@ This node is used to read acceleration values from the MPU6050 IMU, through the 
 
 ```mermaid
 graph LR
-    T1[IMU data] -. . .-> Node((mpu6050_node))
+    T1[IMU data] -. / .-> Node((mpu6050_node))
 
     Node -- /imu/data -->D[Odometry]
 ```
 
+The node reads the value of the MPU6050 sensor through the I2C bus, also with the _smbus_ Python librairy. The data is sent every 0.1s in the form of a ROS Imu message, which is the type of message used by the Nav2 package for IMU sensors.
 
+
+## gyro_node
+
+![Node file](software/spok_rob/spok_rob/gyro_node.py)
+
+This node also reads data from the MPU6050 sensor, but it also converts the data into the pitch and roll angles of the robot.
+We used this node to balance the robot on an uneven floor, but it is not used for the movement.
+
+```mermaid
+graph LR
+    T1[IMU data] -. / .-> Node((gyro_node))
+
+    Node -- /robot_orientation -->D[Self balancing]
+```
+
+## connection_node
+
+![Node file](software/spok_rob/spok_rob/connection_node.py)
+
+This node is used to check the state of the connection between the robot and the computer running the video feedback and the navigation packages.
+It uses the _subprocess_ Python librairy to ping the computer every second.
+
+```mermaid
+graph LR
+    T1[] -. / .-> Node((connection_node))
+
+    Node -- /connection_state -->D[Self balancing]
+    Node -- /pico_subscriber -->D[Micro ROS: LED blinking pattern]
+```
 
 
 
