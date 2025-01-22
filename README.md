@@ -200,10 +200,20 @@ graph LR
     n6[Joy Node] -- /joy --> n1
     n4 -- /odom/raw --> n7[Footprint to Odom EKF]
     n4 -- /base_to_footprint_pose --> n8[Base to Footprint EKF]
-    n9 -- /joint_states --> n4
-    n9 -- /joint_states --> n11[Robot State Publisher]
+
 
     classDef nodeStyle fill:#f9f,stroke:#333,stroke-width:2px;
     class n1,n2,n4,n9,n10,n11,n12,n14,n17,n18 nodeStyle;
 ```
+
+## autonom control
+
+```mermaid
+graph LR
+    T1[Odometry source] -- /odom --> Node((Ros2_nav))
+    T2[Laser source] -- /scan --> Node((Ros2_nav))
+
+    Node --  /cmd_vel -->D[/joint_group_effort_controller]
+```
+
 
