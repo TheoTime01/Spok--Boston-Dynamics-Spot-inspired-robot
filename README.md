@@ -67,6 +67,7 @@ The total cost of the robot is around 200€.
   - Python libraries: smbus, smbus2, OpenCV, SpeechRecognition
   - ROS packages: usb_cam
   - Micro ROS Agent
+  - Docker
 - Computer:
   - Ubuntu 22.04
   - ROS2 Humble (ROS_DOMAIN_ID=0)
@@ -104,6 +105,35 @@ The total cost of the robot is around 200€.
 
 
 
+## joint_servo_controller_node
+
+![Node file](software/spok_rob/spok_rob/joint_servo_controller.py)
+
+This node acts as an interface between the position of every joint and the PWM sent to the servo motors.
+
+```mermaid
+graph LR
+    T1[Joints positions] -- /joint_group_effort_controller/joint_trajectory --> Node((joint_servo_controller_node))
+```
+
+Whenever a _JointTrajectory_ message is received from the _/joint_group_effort_controller/joint_trajectory_ topic, the angles are translated into duty cycles, and sent to the Servo Driver HAT which generates a PWM signal for every motor.
+This node connects to the Servo Driver HAT through I2C, with the smbus Python librairy.
+
+
+## mpu6050_node
+
+![Node file](software/spok_rob/spok_rob/mpu6050_node.py)
+
+This node is used to read acceleration values from the MPU6050 IMU, through the same I2C bus as the servo driver.
+
+```mermaid
+graph LR
+    ((mpu6050_node))Node -- /imu/data -->D[Odometry]
+```
+
+
+
+
 ## Micro ROS node → pico_node
 
 ![Node file](hardware/micro_ros_raspberrypi_pico_sdk/pico_micro_ros_spok.cpp)
@@ -119,149 +149,16 @@ graph LR
     Node -- /pico_publisher_bis -->D[Obstacle detection]
 ```
 
+The _/pico_subscriber_ subscriber changes the _state_ variable whenever a message is received. This variable changes the blinking pattern of the LEDs.
 
+A timer is used to measure every 0.1s the distance with both ultrasonic sensors, and sends the measured values on the _/pico_publisher_ and _/pico_publisher_bis_ publishers.
 
+To run this node, the c++ file must be compiled with `make -j4`. The microcontroller has to be plugged into a computer in "BOOTSEL" mode (by pressing the button when plugging it). The _.uf2_ compiled file can now be uploaded into the microcontroller.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-```mermaid
-graph LR
-    T1[Odometry source] -- /odom --> Node((local_planner_student))
-    T2[Laser source] -- /scan --> Node((local_planner_student))
-
-    S1[ ] -. /move_to/singleGoal .-> Node
-    S2[ ] -. /move_to/pathGoal .-> Node
-
-    Node -- /cmd_vel_mux/input/navi -->D[base controller]
+The Micro ROS Agent is the interface between Micro ROS and ROS, and must be running on the Raspberry Pi to enable serial communication.
+```sh
+  docker run -it --rm -v /dev:/dev --privileged --net=host microros/micro-ros-agent:humble serial --dev /dev/ttyACM0 -b 115200
 ```
-
-# Description de l'algo
-
-```mermaid
-sequenceDiagram
-    participant Alice
-    participant Bob
-    Alice->John: Hello John, how are you?
-    loop Healthcheck
-        John->John: Fight against hypochondria
-    end
-    Note right of John: Rational thoughts <br/>prevail...
-    John-->Alice: Great!
-    John->Bob: How about you?
-    Bob-->John: Jolly good!
-```
-
-# Vidéos de présentation
-
-[Lien vers la vidéo pitch youtube](url)
-
-[Lien vers la vidéo tutoriel youtube](url)
-
-# Liste des dépendances et pré-requis
-
-- a
-- b
-
-# Procédure de mise en route
-
-- a
-- b
-- n
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## Features
-
-- **Quadrupedal Locomotion**: Robust and stable walking mechanisms for rough terrain.
-- **Real-Time Video Display**: A camera system to stream real-time video to remote operators.
-- **Autonomous and Teleoperated Modes**: Switch between autonomous operation and manual control via a remote interface.
-
-## Objectives
-
-1. Develop a quadrupedal robot platform using 3D-printed parts and accessible components.
-2. Leverage ROS2 for modular and efficient robotics software development.
-3. Implement a robust locomotion algorithm for navigation.
-4. Create a user-friendly interface for teleoperation and data monitoring.
-
-## Hardware Requirements
-
-![Schema](media/schema.png)
-
-- **Processor**: Raspberry Pi 4 or NVIDIA Jetson Nano for onboard processing.
-- **Motors**: High-torque servo motors for leg movement.
-- **Sensors**:
-  - Thermal camera for heat detection.
-  - Lidar for environmental mapping.
-  - Gas sensor for hazardous gas detection.
-  - IMU for stability and orientation.
-- **Camera**: For real-time video streaming to remote operators.
-- **Power Supply**: Lithium polymer (LiPo) battery pack.
-- **Body**: 3D-printed frame using heat-resistant materials.
-
-## Software Requirements
-
-- **ROS2 (Robot Operating System 2)**
-- **Python** for custom control algorithms.
-- **Gazebo** for simulation.
-- **Rviz** for visualization.
-- **OpenCV** for computer vision tasks.
-- **SLAM Toolbox** for mapping and navigation.
-
-## Installation
-
-...
-
-## Usage
-
-- **Simulation**:
-
-- **Teleoperation**:
-
-- **Real-Time Video Stream**:
-  Access the live video feed from the robot’s camera through the provided ROS2 node or remote interface.
-
-## Future Enhancements
-
-...
-
-
 
 
 
