@@ -141,7 +141,7 @@ The node reads the value of the MPU6050 sensor through the I2C bus, also with th
 
 ![Node file](software/spok_rob/spok_rob/gyro_node.py)
 
-This node also reads data from the MPU6050 sensor, but it also converts the data into the pitch and roll angles of the robot.
+This node also reads data from the MPU6050 sensor, but it also converts the data into the pitch and roll angles of the robot using a Kalman filter.
 We used this node to balance the robot on an uneven floor, but it is not used for the movement.
 
 ```mermaid
@@ -160,12 +160,32 @@ It uses the _subprocess_ Python librairy to ping the computer every second.
 
 ```mermaid
 graph LR
-    T1[] -. / .-> Node((connection_node))
+    T1[Ping IP] -. / .-> Node((connection_node))
 
     Node -- /connection_state -->D[Self balancing]
     Node -- /pico_subscriber -->D[Micro ROS: LED blinking pattern]
 ```
 
+The node has 2 publisher. The first one, _/connection_state_ send the state of the connection as a boolean after every ping.
+The second one publishes an Int32 message (any number) only when the state of the connection changes. The Micro ROS node subscribes to this topic the change the blinking pattern of the LEDs depending on the connection state.
+
+## face_detection_node
+
+![Node file](software/quadruped_robot/quadruped_robot/face_detection_node.py)
+
+The aim of this node is to add information to the video feedback, such as rectangle around the face of detected people. The node searches for faces using a Haar cascade and OpenCV in every 10 frames of the webcam video. We use a Haar Cascade instead of a detection network because it can run on a Raspberry Pi, even if the result is less precise.
+
+```mermaid
+graph LR
+    T1[Webcam video] -- /image_raw --> Node((face_detection_node))
+
+    Node -- /output_video -->D[Video feedback]
+```
+
+The node subscribes to the _/image_raw_ topic from the _usb_cam_ package, and search for faces with a Haar cascade in every 10 frames.
+It creates new frames, overlaying rectangles over detected faces, and send thoese frames through the _/output_video_ topic.
+
+In practice, the low quality of our network makes it difficult to run this node, as it does not receive enough video frames.
 
 
 ## Micro ROS node → pico_node
