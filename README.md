@@ -128,8 +128,11 @@ This node is used to read acceleration values from the MPU6050 IMU, through the 
 
 ```mermaid
 graph LR
-    ((mpu6050_node))Node -- /imu/data -->D[Odometry]
+    T1[IMU data] -.  .-> Node((mpu6050_node))
+
+    Node -- /imu/data -->D[Odometry]
 ```
+
 
 
 
