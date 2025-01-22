@@ -23,19 +23,11 @@ def generate_launch_description():
             executable='word_detect_node',
             name='word_detect_node'
         ),
-
         Node(
             package='spok_rob',
             executable='connection_node',
             name='connection_node'
         ),
-
-        Node(
-            package='spok_rob',
-            executable='word_detect_node',
-            name='word_detect_node'
-        ),
-
         Node(
             package='usb_cam',
             executable='usb_cam_node_exe',
