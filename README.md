@@ -27,7 +27,8 @@ Hardware list:
 - Jumper wires
 - x2 Micro USB cables
 - 7.5V mains power supply
-- 3D printed parts
+- 3D printed parts (PLA)
+- anti-slip material for the foot (foam, TPU, ...)
 - x8 bearings
 - screws, nuts, zip ties, glue
 
@@ -105,7 +106,10 @@ The total cost of the robot is around 200€.
 
 ## Micro ROS node → pico_node
 
-We created a Micro ROS node
+![Node file](hardware/micro_ros_raspberrypi_pico_sdk/pico_micro_ros_spok.cpp)
+
+We created a Micro ROS node, running in a Raspberry Pi Pico, to interface a microcontroller to the ROS environment.
+The microcontroller is conected to 2 HC-SR04 ultrasonic sensors, and 4 LEDs, through its GPIO pins.
 
 ```mermaid
 graph LR
