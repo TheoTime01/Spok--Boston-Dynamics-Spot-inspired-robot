@@ -1,7 +1,23 @@
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Bool, Int32
-import os
+import subprocess
+
+
+
+
+def is_device_connected(ip_address: str, timeout: int = 1) -> bool:
+    try:
+        result = subprocess.run(
+            ["ping", "-c", "1", "-W", str(timeout), ip_address],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True
+        )
+        return result.returncode == 0
+    except Exception as e:
+        print(f"Error pinging {ip_address}: {e}")
+        return False
 
 
 class ConnectionNode(Node):
@@ -9,6 +25,7 @@ class ConnectionNode(Node):
         super().__init__('connection_node')
 
         self.connection_state = True
+        self.connection_check = 0
 
         self.hostname = "192.168.1.221"
 
@@ -17,18 +34,26 @@ class ConnectionNode(Node):
 
         self.timer_ = self.create_timer(0.5, self.publish_connection)
 
+
     def publish_connection(self):
 
-        response = os.system("ping -c 1 -q " + self.hostname)
-
-        if response == 0:
+        if (is_device_connected(self.hostname)) and (self.connection_state == False):
+            print("CONNECTED")
             self.connection_state = True
-        elif((response == 0) and (self.connection_state == True)):
+            msg_pico = Int32()
+            msg_pico.data = 1
+            self.publisher_pico.publish(msg_pico)
+        elif (not is_device_connected(self.hostname)) and (self.connection_state == True):
+            print("NOT CONNECTED")
             self.connection_state = False
             msg_pico = Int32()
             msg_pico.data = 1
             self.publisher_pico.publish(msg_pico)
-        else:
+        elif (is_device_connected(self.hostname)) and (self.connection_state == True):
+            print("CONNECTED")
+            self.connection_state = True
+        elif (not is_device_connected(self.hostname)) and (self.connection_state == False):
+            print("NOT CONNECTED")
             self.connection_state = False
 
         msg = Bool()
