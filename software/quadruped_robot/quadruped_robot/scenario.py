@@ -4,7 +4,7 @@ from rclpy.node import Node
 from geometry_msgs.msg import Twist, Pose
 from tf_transformations import quaternion_from_euler
 from champ_msgs.msg import Pose as PoseLite
-from std_msgs.msg import Float32
+from std_msgs.msg import Float32, Int32
 import time
 
 class ScenarioNode(Node):
@@ -15,6 +15,7 @@ class ScenarioNode(Node):
         self.velocity_publisher = self.create_publisher(Twist, 'cmd_vel', 1)
         self.pose_lite_publisher = self.create_publisher(PoseLite, 'body_pose/raw', 1)
         self.pose_publisher = self.create_publisher(Pose, 'body_pose', 1)
+        self.no_wifi = self.create_publisher(Int32, 'pico_subscriber', 1)
 
         # Subscribers
         self.sonar_subscriber = self.create_subscription(
@@ -32,7 +33,7 @@ class ScenarioNode(Node):
 
         # Declare and get parameters with default values
         self.declare_parameter("speed", 0.2)
-        self.declare_parameter("turn_speed", 0.4)
+        self.declare_parameter("turn_speed", 1.0)
         self.speed = self.get_parameter("speed").value
         self.turn_speed = self.get_parameter("turn_speed").value
 
@@ -123,13 +124,14 @@ class ScenarioNode(Node):
 
         self.get_logger().info('Laying up')
     
-    def lay_down_mov(self):
+    def lay_down_mov(self, duration):
         self.lay_down()
         self.lay_up()
-        self.wait_for_obstacle_clearance(3)
+        self.wait_for_obstacle_clearance(duration)
+        
 
 
-    def forward(self):
+    def forward(self, duration):
         """Move the robot forward."""
         twist = Twist()
         twist.linear.x = -self.speed
@@ -140,9 +142,9 @@ class ScenarioNode(Node):
         twist.angular.z = 0.0
         self.velocity_publisher.publish(twist)
         self.get_logger().info('Moving forward')
-        self.wait_for_obstacle_clearance(5)
+        self.wait_for_obstacle_clearance(duration)
 
-    def backward(self):
+    def backward(self, duration):
         """Move the robot backward."""
         twist = Twist()
         twist.linear.x = self.speed
@@ -153,9 +155,9 @@ class ScenarioNode(Node):
         twist.angular.z = 0.0
         self.velocity_publisher.publish(twist)
         self.get_logger().info('Moving backward')
-        self.wait_for_obstacle_clearance(3)
+        self.wait_for_obstacle_clearance(duration)
 
-    def turn_left(self):
+    def turn_right(self, duration):
         """Turn the robot to the left."""
         twist = Twist()
         twist.linear.x = 0.0
@@ -163,12 +165,12 @@ class ScenarioNode(Node):
         twist.linear.z = 0.0
         twist.angular.x = 0.0
         twist.angular.y = 0.0
-        twist.angular.z = self.turn_speed
+        twist.angular.z = -self.turn_speed
         self.velocity_publisher.publish(twist)
         self.get_logger().info('Turning left')
-        self.wait_for_obstacle_clearance(6)
+        self.wait_for_obstacle_clearance(duration)
 
-    def stop(self):
+    def stop(self, duration):
         """Stop the robot."""
         twist = Twist()
         twist.linear.x = 0.0
@@ -179,7 +181,14 @@ class ScenarioNode(Node):
         twist.angular.z = 0.0
         self.velocity_publisher.publish(twist)
         self.get_logger().info('Stopping')
-        time.sleep(1)
+        self.wait_for_obstacle_clearance(duration)
+
+    def no_wifi_funct(self):
+        msg = Int32()
+        msg.data = 1
+        self.no_wifi.publish(msg)
+        self.get_logger().info('No wifi')
+
 
     def wait_for_obstacle_clearance(self, duration):
         """Wait for the specified duration, pausing for obstacles."""
@@ -194,13 +203,18 @@ class ScenarioNode(Node):
 
     def execute_scenario(self):
         """Execute the predefined scenario."""
-        self.lay_down_mov()
-        self.forward()
-        self.stop()
-        self.turn_left()
-        self.stop()
-        self.backward()
-        self.stop()
+        time.sleep(4)
+        self.lay_down_mov(3)
+        self.forward(5)
+        self.stop(1)
+        self.turn_right(3)
+        self.stop(1)
+        self.no_wifi_funct()
+        self.stop(3)
+        self.turn_right(3)
+        self.stop(1)
+        self.forward(3)
+        self.stop(1)
         self.lay_down()
 
 def main(args=None):
