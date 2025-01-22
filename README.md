@@ -19,6 +19,8 @@ This project is inspired by Boston Dynamics' Spot Mini robot and aims to develop
 
 ## Hardware Requirements
 
+![Schema](media/schema.png)
+
 - **Processor**: Raspberry Pi 4 or NVIDIA Jetson Nano for onboard processing.
 - **Motors**: High-torque servo motors for leg movement.
 - **Sensors**:
