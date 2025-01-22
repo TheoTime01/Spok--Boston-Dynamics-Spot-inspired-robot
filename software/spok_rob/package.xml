@@ -4,7 +4,8 @@
   <name>spok_rob</name>
   <version>0.0.0</version>
   <description>TODO: Package description</description>
-  <maintainer email="perricht@gmail.com">tototime</maintainer>
+  <maintainer email="perricht@gmail.com">theotime</maintainer>
+  <maintainer email="arnaud.sibenaler@cpe.fr">arnaud</maintainer>
   <license>Apache-2.0</license>
 
   <test_depend>ament_copyright</test_depend>

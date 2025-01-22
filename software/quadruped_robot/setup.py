@@ -18,7 +18,6 @@ setup(
         (os.path.join('share', package_name, 'stl'   ), glob('stl/*')),
         (os.path.join('share', package_name, 'meshes'   ), glob('meshes/*')),
         (os.path.join('share', package_name, 'worlds'   ), glob('worlds/*')),
-        (os.path.join('share', package_name, 'json'   ), glob('json/*')),
         (os.path.join('share', package_name, 'rviz'), glob(os.path.join('rviz', '*'))),
         (os.path.join('share', package_name, 'params'), glob(os.path.join('params', '*.yaml'))),
     ],
@@ -34,15 +33,10 @@ setup(
     entry_points={
         'console_scripts':
         [
-        'virtual_joy_stick = quadruped_robot.virtual_joy_stick:main',
         'joystick_controller = quadruped_robot.joystick_controller:main',
         'camera_sonar_view_node = quadruped_robot.camera_sonar_view:main',
-        'manual_motion_node = quadruped_robot.manual_motion:main',
-        'tkinter_node = quadruped_robot.tkinter_node:main',
-        'camera_process_node = quadruped_robot.camera_process_node:main',
-        'demo_16_node = quadruped_robot.demo_16_node:main',
         'lidar_scan_republisher = quadruped_robot.lidar_scan_republisher:main',
-        'face_detectiuon_node = quadruped_robot.face_detection_node:main',
+        'face_detection_node = quadruped_robot.face_detection_node:main',
         'scenario = quadruped_robot.scenario:main',
         ]
     },

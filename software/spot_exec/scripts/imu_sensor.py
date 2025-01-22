@@ -46,6 +46,7 @@ class SimPose:
         self.sim_pose_publisher.publish(sim_pose_msg)
 
 if __name__ == "__main__":
-    rospy.init_node("champ_gazebo_sim_pose", anonymous = True)
+    rospy.init_
+    node("champ_gazebo_sim_pose", anonymous = True)
     odom = SimPose()
     rospy.spin()
