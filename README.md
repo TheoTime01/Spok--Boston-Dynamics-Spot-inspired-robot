@@ -29,7 +29,9 @@ Hardware list:
 - 7.5V mains power supply
 - 3D printed parts
 - x8 bearings
-- screws and nuts
+- screws, nuts, zip ties, glue
+
+- Laptop connected to the same network
 
 ![Spok](media/schema.png)
 
@@ -38,15 +40,98 @@ The total cost of the robot is around 200€.
 
 # List of features:
 
-1. [x] RO
-2. [ ] Incomplete features
-    1. [ ] Sub-task 1
-    2. [x] Sub-task 2
-3. [x] ROS Navigation Stack
-    1. [x] Sub-task 1
-    2. [x] Sub-task 2
+1. [x] Control robot movements with a joystick
+    1. [x] Simulation with Gazebo
+    2. [x] Real robot
+2. [x] Autonomous movements
+    1. [x] Simulation with Gazebo
+    2. [ ] Real robot
+3. [x] Extra features
+    1. [x] Connection state detection
+    2. [x] Obstacle detection
+    3. [x] Video feedback
+    4. [ ] Person detection (too slow to be used)
+    5. [x] Visual marker (LEDs)
+4. [ ] Incomplete features
+    1. [ ] Wake word engine (only works online)
+    2. [ ] Text to speech
 
-# Représentation des noeuds
+
+# Dependencies
+
+- Robot:
+  - Ubuntu 22.04
+  - ROS2 Humble
+  - Python 3
+  - Python libraries: smbus, smbus2, OpenCV, SpeechRecognition
+  - ROS packages: usb_cam
+  - Micro ROS Agent
+- Computer:
+  - Ubuntu 22.04
+  - ROS2 Humble
+  - Python 3
+  - Python librairies: OpenCV
+  - ROS packages: Champ, CvBridge, Nav2, Joy
+
+
+# Launch
+
+- Robot:
+  - Launch file
+  ```sh
+  ros2 launch spok_rob spok.launch.py
+  ```
+  - Micro ROS Agent
+  ```sh
+  docker run -it --rm -v /dev:/dev --privileged --net=host microros/micro-ros-agent:humble serial --dev /dev/ttyACM0 -b 115200
+  ```
+
+- Computer:
+  - Manual mode
+  ```sh
+  ros2 launch
+  ```
+  OR
+  - Autonomous mode
+  ```sh
+  ros2 launch
+  ```
+
+
+# Nodes
+
+
+
+
+## Micro ROS node → pico_node
+
+```mermaid
+graph LR
+    T1[Connection state] -- /pico_subscriber --> Node
+
+    Node -- /pico_publisher -->D[Obstacle detection]
+    Node -- /pico_publisher_bis -->D[Obstacle detection]
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ```mermaid
 graph LR
