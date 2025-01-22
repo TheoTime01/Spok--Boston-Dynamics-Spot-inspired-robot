@@ -58,7 +58,6 @@ void timer_callback(rcl_timer_t *timer, int64_t last_call_time)
     sleep_us(10);
     gpio_put(TRIGGER_PIN_2, 0);
 
-    //uint32_t signaloff, signalon;
     do {
       signaloff = time_us_32();
     } while (gpio_get(ECHO_PIN_2) == 0);
@@ -70,7 +69,6 @@ void timer_callback(rcl_timer_t *timer, int64_t last_call_time)
     dt = signalon - signaloff;
     msg_pub_bis.data =  dt * 0.000343 / 2.0;
 
-    //rcl_ret_t ret = rcl_publish(&publisher_bis, &msg_pub_bis, NULL);
     ret = rcl_publish(&publisher_bis, &msg_pub_bis, NULL);
     
 }
@@ -78,10 +76,8 @@ void timer_callback(rcl_timer_t *timer, int64_t last_call_time)
 void subscription_callback(const void * msgin)
 {   
     if(state == 0){
-        //gpio_put(LED_4, 1);
-        state = 1;
+*        state = 1;
     }else{
-        //gpio_put(LED_4, 0);
         state = 0;
     }
     const std_msgs__msg__Int32 * msg = (const std_msgs__msg__Int32 *)msgin;

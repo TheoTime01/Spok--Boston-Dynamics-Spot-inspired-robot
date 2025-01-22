@@ -61,14 +61,14 @@ The total cost of the robot is around 200€.
 
 - Robot:
   - Ubuntu 22.04
-  - ROS2 Humble
+  - ROS2 Humble (ROS_DOMAIN_ID=0)
   - Python 3
   - Python libraries: smbus, smbus2, OpenCV, SpeechRecognition
   - ROS packages: usb_cam
   - Micro ROS Agent
 - Computer:
   - Ubuntu 22.04
-  - ROS2 Humble
+  - ROS2 Humble (ROS_DOMAIN_ID=0)
   - Python 3
   - Python librairies: OpenCV
   - ROS packages: Champ, CvBridge, Nav2, Joy
@@ -105,9 +105,11 @@ The total cost of the robot is around 200€.
 
 ## Micro ROS node → pico_node
 
+We created a Micro ROS node
+
 ```mermaid
 graph LR
-    T1[Connection state] -- /pico_subscriber --> Node
+    T1[Connection state] -- /pico_subscriber --> Node((pico_node))
 
     Node -- /pico_publisher -->D[Obstacle detection]
     Node -- /pico_publisher_bis -->D[Obstacle detection]
