@@ -90,12 +90,13 @@ The total cost of the robot is around 200€.
 - Computer:
   - Manual mode
   ```sh
-  ros2 launch
+  ros2 launch quadruped_robot spot_bringup.launch.py
   ```
   OR
   - Autonomous mode
   ```sh
-  ros2 launch
+  cd src/S7_G7_Perrichet_Sibenaler/software/quadruped_robot/params/
+  ros2 launch quadruped_robot spot_bringup_nav.launch.py headless:=False params_file:="nav2_params_empty.yaml" map:="<absolut path>/<maps>.yaml" 
   ```
 
 
@@ -185,7 +186,7 @@ sequenceDiagram
 
 
 
-
+## PC nodes
 
 
 
