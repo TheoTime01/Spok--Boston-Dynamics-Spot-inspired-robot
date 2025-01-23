@@ -12,12 +12,12 @@ This project, inspired by Boston Dynamics' Spot robot, aims to develop a quadrup
 
 ## Videos
 
-![Presentation](https://youtu.be/)
+![Presentation](https://www.youtube.com/)
 
-![Tutorial](https://youtu.be/J5kNFhRe64M)
+![Tutorial](https://www.youtube.com/watch?v=J5kNFhRe64M)
 
 
-### Hardware
+## Hardware
 
 Our robot is made up of 3D printed parts. Most of the 3D models can be found here: [Thingiverse Project](https://www.thingiverse.com/thing:3638679). Some parts have been recreated to fit to our electronics.
 
@@ -110,10 +110,9 @@ The total cost of the robot is around 200€.
 
 # Nodes
 
+## Running on the robot
 
-
-
-## joint_servo_controller_node
+### joint_servo_controller_node
 
 ![Node file](software/spok_rob/spok_rob/joint_servo_controller.py)
 
@@ -128,7 +127,7 @@ Whenever a _JointTrajectory_ message is received from the _/joint_group_effort_c
 This node connects to the Servo Driver HAT through I2C, with the _smbus_ Python librairy.
 
 
-## mpu6050_node
+### mpu6050_node
 
 ![Node file](software/spok_rob/spok_rob/mpu6050_node.py)
 
@@ -144,7 +143,7 @@ graph LR
 The node reads the value of the MPU6050 sensor through the I2C bus, also with the _smbus_ Python librairy. The data is sent every 0.1s in the form of a ROS Imu message, which is the type of message used by the Nav2 package for IMU sensors.
 
 
-## gyro_node
+### gyro_node
 
 ![Node file](software/spok_rob/spok_rob/gyro_node.py)
 
@@ -158,7 +157,9 @@ graph LR
     Node -- /robot_orientation -->D[Self balancing]
 ```
 
-## connection_node
+The node publishes the pitch an roll angles every 0.005s in the form of an array of 2 ints.
+
+### connection_node
 
 ![Node file](software/spok_rob/spok_rob/connection_node.py)
 
@@ -176,7 +177,8 @@ graph LR
 The node has 2 publisher. The first one, _/connection_state_ send the state of the connection as a boolean after every ping.
 The second one publishes an Int32 message (any number) only when the state of the connection changes. The Micro ROS node subscribes to this topic the change the blinking pattern of the LEDs depending on the connection state.
 
-## face_detection_node
+
+### face_detection_node
 
 ![Node file](software/quadruped_robot/quadruped_robot/face_detection_node.py)
 
@@ -191,11 +193,10 @@ graph LR
 
 The node subscribes to the _/image_raw_ topic from the _usb_cam_ package, and search for faces with a Haar cascade in every 10 frames.
 It creates new frames, overlaying rectangles over detected faces, and send thoese frames through the _/output_video_ topic.
-
 In practice, the low quality of our network makes it difficult to run this node, as it does not receive enough video frames.
 
 
-## Micro ROS node → pico_node
+### Micro ROS node → pico_node
 
 ![Node file](hardware/micro_ros_raspberrypi_pico_sdk/pico_micro_ros_spok.cpp)
 
@@ -222,31 +223,9 @@ The Micro ROS Agent is the interface between Micro ROS and ROS, and must be runn
 ```
 
 
+## Running on the laptop
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## manual control
+### manual control
 
 ```mermaid
 graph LR
@@ -263,7 +242,7 @@ graph LR
     class n1,n2,n4,n9,n10,n11,n12,n14,n17,n18 nodeStyle;
 ```
 
-## autonom control
+### autonom control
 
 ```mermaid
 graph LR
