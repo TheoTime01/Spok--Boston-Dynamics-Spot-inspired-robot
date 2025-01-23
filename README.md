@@ -10,7 +10,7 @@ This project, inspired by Boston Dynamics' Spot robot, aims to develop a quadrup
 
 ![Spok](media/spok2.jpg)
 
-### Hardware
+## Hardware
 
 Our robot is made up of 3D printed parts. Most of the 3D models can be found here: [Thingiverse Project](https://www.thingiverse.com/thing:3638679). Some parts have been recreated to fit to our electronics.
 
@@ -38,8 +38,12 @@ Hardware list:
 
 The total cost of the robot is around 200€.
 
+## Software
 
-# List of features:
+we based the robot's inverse kinematics on the [champ repository](https://github.com/chvmp/champ). More details [here](software/ik.md)
+
+
+## List of features:
 
 1. [x] Control robot movements with a joystick
     1. [x] Simulation with Gazebo
@@ -58,7 +62,7 @@ The total cost of the robot is around 200€.
     2. [ ] Text to speech
 
 
-# Dependencies
+## Dependencies
 
 - Robot:
   - Ubuntu 22.04
@@ -75,8 +79,27 @@ The total cost of the robot is around 200€.
   - Python librairies: OpenCV
   - ROS packages: Champ, CvBridge, Nav2, Joy
 
+### Install Dependencies
 
-# Launch
+Navigate to the workspace and run `rosdep` to install the required dependencies:
+```bash
+cd ~/your_workspace
+rosdep install --from-paths src --ignore-src -r -y
+```
+
+### Build the Workspace on PC
+Build the workspace using `colcon`:
+```bash
+colcon build --packages-ignore micro_ros_raspberrypicosdk
+```
+
+### Build the Workspace on Raspberry Pi
+Build the workspace using `colcon`:
+```bash
+colcon build --packages-select spok_rob micro_ros_raspberrypicosdk
+```
+
+## Launch
 
 - Robot:
   - Launch file
@@ -101,12 +124,12 @@ The total cost of the robot is around 200€.
   ```
 
 
-# Nodes
+## Nodes
 
 
 
 
-## joint_servo_controller_node
+### joint_servo_controller_node
 
 ![Node file](software/spok_rob/spok_rob/joint_servo_controller.py)
 
@@ -121,7 +144,7 @@ Whenever a _JointTrajectory_ message is received from the _/joint_group_effort_c
 This node connects to the Servo Driver HAT through I2C, with the _smbus_ Python librairy.
 
 
-## mpu6050_node
+### mpu6050_node
 
 ![Node file](software/spok_rob/spok_rob/mpu6050_node.py)
 
@@ -137,7 +160,7 @@ graph LR
 The node reads the value of the MPU6050 sensor through the I2C bus, also with the _smbus_ Python librairy. The data is sent every 0.1s in the form of a ROS Imu message, which is the type of message used by the Nav2 package for IMU sensors.
 
 
-## gyro_node
+### gyro_node
 
 ![Node file](software/spok_rob/spok_rob/gyro_node.py)
 
@@ -151,7 +174,7 @@ graph LR
     Node -- /robot_orientation -->D[Self balancing]
 ```
 
-## connection_node
+### connection_node
 
 ![Node file](software/spok_rob/spok_rob/connection_node.py)
 
@@ -169,7 +192,7 @@ graph LR
 The node has 2 publisher. The first one, _/connection_state_ send the state of the connection as a boolean after every ping.
 The second one publishes an Int32 message (any number) only when the state of the connection changes. The Micro ROS node subscribes to this topic the change the blinking pattern of the LEDs depending on the connection state.
 
-## face_detection_node
+### face_detection_node
 
 ![Node file](software/quadruped_robot/quadruped_robot/face_detection_node.py)
 
@@ -188,7 +211,7 @@ It creates new frames, overlaying rectangles over detected faces, and send thoes
 In practice, the low quality of our network makes it difficult to run this node, as it does not receive enough video frames.
 
 
-## Micro ROS node → pico_node
+### Micro ROS node → pico_node
 
 ![Node file](hardware/micro_ros_raspberrypi_pico_sdk/pico_micro_ros_spok.cpp)
 
@@ -215,31 +238,7 @@ The Micro ROS Agent is the interface between Micro ROS and ROS, and must be runn
 ```
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## manual control
+### manual control
 
 ```mermaid
 graph LR
@@ -256,7 +255,7 @@ graph LR
     class n1,n2,n4,n9,n10,n11,n12,n14,n17,n18 nodeStyle;
 ```
 
-## autonom control
+### autonom control
 
 ```mermaid
 graph LR
@@ -266,3 +265,9 @@ graph LR
     Node --  /cmd_vel -->D[joint_group_effort_controller]
 ```
 
+
+### Vidéos de présentation
+
+[Lien vers la vidéo pitch youtube]([url](https://youtu.be/2A4rRGX-Tw8))
+
+[Lien vers la vidéo tutoriel youtube]([url](https://youtu.be/J5kNFhRe64M?list=PLRWtwGXZ7aG_CE56vYUK59hQ4GDSZgDAP))
