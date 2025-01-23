@@ -249,7 +249,11 @@ The Micro ROS Agent is the interface between Micro ROS and ROS, and must be runn
 
 ## Running on the laptop
 
-### manual control
+### Manual control
+
+Structure of the ROS nodes in charge of controling the robot manually.
+The joystick inputs are converted into velocity , and then joint positions.
+We can estimate the position of the robot with the contact position of the foot.
 
 ```mermaid
 graph LR
@@ -266,7 +270,10 @@ graph LR
     class n1,n2,n4,n9,n10,n11,n12,n14,n17,n18 nodeStyle;
 ```
 
-### autonom control
+### Autonomous control
+
+Structure of the node for autonomous movements.
+We use the odometry and the measurements from the lidar to estimate the position of the robot.
 
 ```mermaid
 graph LR
