@@ -10,6 +10,15 @@ This project, inspired by Boston Dynamics' Spot robot, aims to develop a quadrup
 
 ![Spok](media/spok2.jpg)
 
+## Videos
+
+![Presentation](media/video/)
+Link: https://youtu.be/2A4rRGX-Tw8
+
+![Tutorial](media/video/ProjetMajeur2025_tutorial.mp4)
+Link: https://www.youtube.com/watch?v=J5kNFhRe64M
+
+
 ## Hardware
 
 Our robot is made up of 3D printed parts. Most of the 3D models can be found here: [Thingiverse Project](https://www.thingiverse.com/thing:3638679). Some parts have been recreated to fit to our electronics.
@@ -126,8 +135,7 @@ colcon build --packages-select spok_rob micro_ros_raspberrypicosdk
 
 ## Nodes
 
-
-
+## Running on the robot
 
 ### joint_servo_controller_node
 
@@ -174,6 +182,8 @@ graph LR
     Node -- /robot_orientation -->D[Self balancing]
 ```
 
+The node publishes the pitch an roll angles every 0.005s in the form of an array of 2 ints.
+
 ### connection_node
 
 ![Node file](software/spok_rob/spok_rob/connection_node.py)
@@ -207,7 +217,6 @@ graph LR
 
 The node subscribes to the _/image_raw_ topic from the _usb_cam_ package, and search for faces with a Haar cascade in every 10 frames.
 It creates new frames, overlaying rectangles over detected faces, and send thoese frames through the _/output_video_ topic.
-
 In practice, the low quality of our network makes it difficult to run this node, as it does not receive enough video frames.
 
 
@@ -238,6 +247,8 @@ The Micro ROS Agent is the interface between Micro ROS and ROS, and must be runn
 ```
 
 
+## Running on the laptop
+
 ### manual control
 
 ```mermaid
@@ -265,9 +276,3 @@ graph LR
     Node --  /cmd_vel -->D[joint_group_effort_controller]
 ```
 
-
-### Vidéos de présentation
-
-[Lien vers la vidéo pitch youtube]([url](https://youtu.be/2A4rRGX-Tw8))
-
-[Lien vers la vidéo tutoriel youtube]([url](https://youtu.be/J5kNFhRe64M?list=PLRWtwGXZ7aG_CE56vYUK59hQ4GDSZgDAP))
