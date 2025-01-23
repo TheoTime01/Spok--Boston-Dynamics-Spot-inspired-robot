@@ -14,7 +14,7 @@ This project, inspired by Boston Dynamics' Spot robot, aims to develop a quadrup
 
 ![Presentation](https://www.youtube.com/)
 
-![Tutorial](https://www.youtube.com/watch?v=J5kNFhRe64M)
+![Tutorial](https://www.youtube.com/watch?v=J5kNFhRe64M/)
 
 
 ## Hardware
