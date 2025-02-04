@@ -1,135 +1,162 @@
-# "SPOK" Project
+# SPOK Project
 
-Authors:
-- Théotime PERRICHET
-- Arnaud SIBENALER
+## Authors
+- **Théotime Perrichet**
+- **Arnaud Sibenaler**
 
 ## Overview
+SPOK is a quadruped robot inspired by Boston Dynamics' Spot, designed to navigate inaccessible areas to assist in firefighting operations.
 
-This project, inspired by Boston Dynamics' Spot robot, aims to develop a quadruped robot capable of navigating inaccessible zones to assist in firefighting operations. 
+This project is made possible thanks to [SpotMicroAI](https://spotmicroai.readthedocs.io/en/latest/).
 
 ![Spok](media/spok2.jpg)
 
-## Videos
+## Table of Contents
+
+- [Videos](#videos)
+- [Hardware](#hardware)
+- [Software](#software)
+- [Features](#list-of-features)
+- [Dependencies](#dependencies)
+- [Installation](#installation)
+- [Running the Project](#running-the-project)
+  - [On the Robot](#running-on-the-robot)
+  - [On the Laptop](#running-on-the-laptop)
+- [ROS2 Nodes](#ros2-nodes)
+
+---
+
+## Video
 
 [Pitch Video](https://youtu.be/bJ2OreaSHS8)
 
-
 ## Hardware
 
-Our robot is made up of 3D printed parts. Most of the 3D models can be found here: [Thingiverse Project](https://www.thingiverse.com/thing:3638679). Some parts have been recreated to fit to our electronics.
+SPOK consists of 3D-printed parts, electronics, and sensors. Most of the 3D models are available [here](https://www.thingiverse.com/thing:3638679), with some modifications for compatibility with our electronics.
 
-Hardware list:
-- Raspberry Pi Zero 2W
-- Servo Driver HAT (PCA9685)
-- x12 Servo motors (MG996R)
-- IMU (MPU6050)
-- USB to Micro USB adapter
-- USB webcam
-- Raspberry Pi Pico
-- x2 Ultrasonic sensors (HC-SR04)
-- x4 Red LEDs with 220Ω resistors
-- Jumper wires
-- x2 Micro USB cables
-- 7.5V mains power supply
-- 3D printed parts (PLA)
-- anti-slip material for the foot (foam, TPU, ...)
-- x8 bearings
-- screws, nuts, zip ties, glue
+### Hardware List
 
-- Laptop connected to the same network
+- **Processing Units:**
+  - Raspberry Pi Zero 2W
+  - Raspberry Pi Pico
+- **Motor Control & Sensors:**
+  - Servo Driver HAT (PCA9685)
+  - 12x MG996R Servo Motors
+  - IMU (MPU6050)
+  - 2x Ultrasonic Sensors (HC-SR04)
+- **Peripherals:**
+  - USB Webcam
+  - USB to Micro USB Adapter
+  - 2x Micro USB Cables
+  - 7.5V Power Supply
+  - Jumper Wires, Screws, Nuts, Zip Ties, Glue
+- **3D-Printed Parts & Miscellaneous:**
+  - PLA-printed structural components
+  - Anti-slip material (foam, TPU, etc.)
+  - 8x Bearings
+  - 4x Red LEDs with 220Ω resistors
 
-![Spok](media/schema.png)
+### Estimated Cost
 
-The total cost of the robot is around 200€.
+Approx. **200€**
+
+![Spok Hardware](media/schema.png)
 
 ## Software
+The robot's inverse kinematics are based on the [CHAMP repository](https://github.com/chvmp/champ). More details are available [here](software/ik.md).
 
-we based the robot's inverse kinematics on the [champ repository](https://github.com/chvmp/champ). More details [here](software/ik.md)
+## List of Features
 
-
-## List of features:
-
-1. [x] Control robot movements with a joystick
-    1. [x] Simulation with Gazebo
-    2. [x] Real robot
-2. [x] Autonomous movements
-    1. [x] Simulation with Gazebo
-    2. [ ] Real robot
-3. [x] Extra features
-    1. [x] Connection state detection
-    2. [x] Obstacle detection
-    3. [x] Video feedback
-    4. [ ] Person detection (too slow to be used)
-    5. [x] Visual marker (LEDs)
-4. [ ] Incomplete features
-    1. [ ] Wake word engine (only works online)
-    2. [ ] Text to speech
+- **Manual Control**
+  - [x] Joystick control
+  - [x] Simulation in Gazebo
+  - [x] Real robot operation
+- **Autonomous Navigation**
+  - [x] Simulation in Gazebo
+  - [ ] Real robot implementation (in progress)
+- **Additional Features**
+  - [x] Connection state detection
+  - [x] Obstacle detection
+  - [x] Video feedback
+  - [ ] Person detection (too slow to use)
+  - [x] Visual markers (LEDs)
 
 
 ## Dependencies
 
-- Robot:
-  - Ubuntu 22.04
-  - ROS2 Humble (ROS_DOMAIN_ID=0)
+### On the Robot
+
+- **Operating System:** Ubuntu 22.04
+- **Framework:** ROS2 Humble (ROS_DOMAIN_ID=0)
+- **Languages & Libraries:**
   - Python 3
-  - Python libraries: smbus, smbus2, OpenCV, SpeechRecognition
-  - ROS packages: usb_cam
-  - Micro ROS Agent
+  - Python libraries: `smbus`, `smbus2`, `OpenCV`, `SpeechRecognition`
+  - ROS packages: `usb_cam`
+  - Micro-ROS Agent
   - Docker
-- Computer:
-  - Ubuntu 22.04
-  - ROS2 Humble (ROS_DOMAIN_ID=0)
+
+### On the Laptop
+
+- **Operating System:** Ubuntu 22.04
+- **Framework:** ROS2 Humble (ROS_DOMAIN_ID=0)
+- **Languages & Libraries:**
   - Python 3
-  - Python librairies: OpenCV
-  - ROS packages: Champ, CvBridge, Nav2, Joy
+  - Python libraries: `OpenCV`
+  - ROS packages: `Champ`, `CvBridge`, `Nav2`, `Joy`
+
+## Installation
 
 ### Install Dependencies
 
-Navigate to the workspace and run `rosdep` to install the required dependencies:
+Run the following command to install the required dependencies:
 ```bash
 cd ~/your_workspace
 rosdep install --from-paths src --ignore-src -r -y
 ```
 
-### Build the Workspace on PC
-Build the workspace using `colcon`:
+### Build the Workspace
+
+#### On the Laptop:
+
 ```bash
 colcon build --packages-ignore micro_ros_raspberrypicosdk
 ```
+#### On the Raspberry Pi:
 
-### Build the Workspace on Raspberry Pi
-Build the workspace using `colcon`:
 ```bash
 colcon build --packages-select spok_rob micro_ros_raspberrypicosdk
 ```
 
-## Launch
+## Running the Project
 
-- Robot:
-  - Launch file
-  ```sh
-  ros2 launch spok_rob spok.launch.py
-  ```
-  - Micro ROS Agent
-  ```sh
-  docker run -it --rm -v /dev:/dev --privileged --net=host microros/micro-ros-agent:humble serial --dev /dev/ttyACM0 -b 115200
-  ```
+### On the Robot
 
-- Computer:
-  - Manual mode
-  ```sh
-  ros2 launch quadruped_robot spot_bringup.launch.py
-  ```
-  OR
-  - Autonomous mode
-  ```sh
-  cd src/S7_G7_Perrichet_Sibenaler/software/quadruped_robot/params/
-  ros2 launch quadruped_robot spot_bringup_nav.launch.py headless:=False params_file:="nav2_params_empty.yaml" map:="<absolut path>/<maps>.yaml" 
-  ```
+#### Launch ROS2 on the robot:
 
+```sh
+ros2 launch spok_rob spok.launch.py
+```
+#### Start Micro-ROS Agent:
 
-## Nodes
+```sh
+docker run -it --rm -v /dev:/dev --privileged --net=host microros/micro-ros-agent:humble serial --dev /dev/ttyACM0 -b 115200
+```
+
+### On the Laptop
+
+#### Manual Mode:
+
+```sh
+ros2 launch quadruped_robot spot_bringup.launch.py
+```
+#### Autonomous Mode:
+
+```sh
+cd src/Spok--Boston-Dynamics-Spot-inspired-robot/software/quadruped_robot/params/ 
+ros2 launch quadruped_robot spot_bringup_nav.launch.py headless:=False params_file:="nav2_params_empty.yaml" map:="<absolute_path>/<maps>.yaml"
+```
+
+## ROS2 Nodes
 
 ## Running on the robot
 
@@ -279,3 +306,9 @@ graph LR
     Node --  /cmd_vel -->D[joint_group_effort_controller]
 ```
 
+## Possible Improvements
+
+- **Run all processes locally on the Raspberry Pi** to remove the dependency on an external computer.
+- **Upgrade motors** to better compensate for the robot's weight and improve mobility.
+- **Replace ultrasonic sensors with a LiDAR** for more accurate obstacle detection and odometry.
+- **Add a robotic arm**, similar to Boston Dynamics' Spot, to enable object manipulation.
