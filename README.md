@@ -162,7 +162,7 @@ ros2 launch quadruped_robot spot_bringup_nav.launch.py headless:=False params_fi
 
 ### joint_servo_controller_node
 
-![Node file](software/spok_rob/spok_rob/joint_servo_controller.py)
+[Node file](software/spok_rob/spok_rob/joint_servo_controller.py)
 
 This node acts as an interface between the position of every joint and the PWM sent to the servo motors.
 
@@ -177,7 +177,7 @@ This node connects to the Servo Driver HAT through I2C, with the _smbus_ Python 
 
 ### mpu6050_node
 
-![Node file](software/spok_rob/spok_rob/mpu6050_node.py)
+[Node file](software/spok_rob/spok_rob/mpu6050_node.py)
 
 This node is used to read acceleration values from the MPU6050 IMU, through the same I2C bus as the servo driver.
 
@@ -193,7 +193,7 @@ The node reads the value of the MPU6050 sensor through the I2C bus, also with th
 
 ### gyro_node
 
-![Node file](software/spok_rob/spok_rob/gyro_node.py)
+[Node file](software/spok_rob/spok_rob/gyro_node.py)
 
 This node also reads data from the MPU6050 sensor, but it also converts the data into the pitch and roll angles of the robot using a Kalman filter.
 We used this node to balance the robot on an uneven floor, but it is not used for the movement.
@@ -209,7 +209,7 @@ The node publishes the pitch an roll angles every 0.005s in the form of an array
 
 ### connection_node
 
-![Node file](software/spok_rob/spok_rob/connection_node.py)
+[Node file](software/spok_rob/spok_rob/connection_node.py)
 
 This node is used to check the state of the connection between the robot and the computer running the video feedback and the navigation packages.
 It uses the _subprocess_ Python librairy to ping the computer every second.
@@ -227,7 +227,7 @@ The second one publishes an Int32 message (any number) only when the state of th
 
 ### face_detection_node
 
-![Node file](software/quadruped_robot/quadruped_robot/face_detection_node.py)
+[Node file](software/quadruped_robot/quadruped_robot/face_detection_node.py)
 
 The aim of this node is to add information to the video feedback, such as rectangle around the face of detected people. The node searches for faces using a Haar cascade and OpenCV in every 10 frames of the webcam video. We use a Haar Cascade instead of a detection network because it can run on a Raspberry Pi, even if the result is less precise.
 
@@ -245,7 +245,7 @@ In practice, the low quality of our network makes it difficult to run this node,
 
 ### Micro ROS node → pico_node
 
-![Node file](hardware/micro_ros_raspberrypi_pico_sdk/pico_micro_ros_spok.cpp)
+[Node file](hardware/micro_ros_raspberrypi_pico_sdk/pico_micro_ros_spok.cpp)
 
 We created a Micro ROS node, running in a Raspberry Pi Pico, to interface a microcontroller to the ROS environment.
 The microcontroller is conected to 2 HC-SR04 ultrasonic sensors, and 4 LEDs, through its GPIO pins.
